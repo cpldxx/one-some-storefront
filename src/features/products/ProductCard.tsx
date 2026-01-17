@@ -1,7 +1,7 @@
 import { Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ShopifyProduct, formatPrice } from '@/lib/shopify';
+import { ShopifyProduct } from '@/lib/shopify';
 import { useLikedStore } from '@/stores/likedStore';
 
 interface ProductCardProps {
@@ -14,7 +14,6 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
   const liked = isLiked(product.node.id);
   
   const imageUrl = product.node.images.edges[0]?.node.url;
-  const price = product.node.priceRange.minVariantPrice;
   
   // Random aspect ratio for masonry effect
   const aspectRatios = ['aspect-[3/4]', 'aspect-[4/5]', 'aspect-square'];
@@ -28,17 +27,21 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
       className="masonry-item product-card"
     >
       <Link to={`/product/${product.node.handle}`} className="block">
-        <div className={`relative bg-grey-100 overflow-hidden ${aspectRatio}`}>
+        <div className={`relative bg-gray-100 overflow-hidden ${aspectRatio} flex items-center justify-center`}>
           {imageUrl ? (
             <img
               src={imageUrl}
               alt={product.node.images.edges[0]?.node.altText || product.node.title}
               className="w-full h-full object-cover"
               loading="lazy"
+              onError={(e) => {
+                console.log('[ProductCard] Image failed to load:', imageUrl);
+                e.currentTarget.style.display = 'none';
+              }}
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm">
-              No image
+            <div className="w-full h-full flex items-center justify-center bg-gray-100">
+              <span className="text-gray-400 text-xs">이미지 없음</span>
             </div>
           )}
           
@@ -57,11 +60,9 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
           </button>
         </div>
         
-        <div className="mt-2 space-y-0.5">
-          <h3 className="text-xs font-medium truncate">{product.node.title}</h3>
-          <p className="text-xs text-muted-foreground">
-            {formatPrice(price.amount, price.currencyCode)}
-          </p>
+        <div className="mt-3 space-y-1">
+          {/* 상품명 */}
+          <h3 className="text-sm font-semibold text-gray-900 line-clamp-2">{product.node.title}</h3>
         </div>
       </Link>
     </motion.div>

@@ -91,7 +91,7 @@ export const HeroSection = () => {
   }, [emblaApi]);
 
   return (
-    <section ref={ref} className="relative bg-white pt-4 pb-8">
+    <section ref={ref} className="relative bg-white pt-4 pb-2">
       <div className="container mx-auto px-4">
         <div className="relative rounded-2xl overflow-hidden">
           {/* Embla Carousel */}
@@ -205,26 +205,7 @@ export const HeroSection = () => {
           </div>
         </div>
 
-        {/* 프로모션 바 */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isVisible ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.6 }}
-          className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4"
-        >
-          <div className="bg-gray-50 rounded-lg p-4 text-center">
-            <div className="text-2xl font-bold text-gray-900">무료배송</div>
-            <div className="text-sm text-gray-600 mt-1">5만원 이상 구매시</div>
-          </div>
-          <div className="bg-gray-50 rounded-lg p-4 text-center">
-            <div className="text-2xl font-bold text-gray-900">무료반품</div>
-            <div className="text-sm text-gray-600 mt-1">14일 이내</div>
-          </div>
-          <div className="bg-gray-50 rounded-lg p-4 text-center">
-            <div className="text-2xl font-bold text-gray-900">신규회원</div>
-            <div className="text-sm text-gray-600 mt-1">5,000원 적립금 지급</div>
-          </div>
-        </motion.div>
+
       </div>
     </section>
   );

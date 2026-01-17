@@ -1,18 +1,23 @@
+import { useQuery } from '@tanstack/react-query';
 import { Layout } from '@/features/layout/Layout';
-import { ProductGrid } from '@/features/products/ProductGrid';
 import { HeroSection } from '@/features/landing/HeroSection';
-import { TodayRecommendedSection } from '@/features/landing/TodayRecommendedSection';
-import { CTASection } from '@/features/landing/CTASection';
-import { LandingFooter } from '@/features/landing/LandingFooter';
+import { AIPickSection } from '@/features/landing/AIPickSection';
+import { TrendingSection } from '@/features/landing/TrendingSection';
+import { ShopComingSoonSection } from '@/features/landing/ShopComingSoonSection';
+import { fetchStylePosts } from '@/lib/community';
 
 const Index = () => {
+  const { data: stylePosts = [] } = useQuery({
+    queryKey: ['style-posts'],
+    queryFn: () => fetchStylePosts(),
+  });
+
   return (
     <Layout>
       <HeroSection />
-      <TodayRecommendedSection />
-      <ProductGrid showTitle={true} />
-      <CTASection />
-      <LandingFooter />
+      <AIPickSection posts={stylePosts} />
+      <TrendingSection posts={stylePosts} />
+      <ShopComingSoonSection />
     </Layout>
   );
 };

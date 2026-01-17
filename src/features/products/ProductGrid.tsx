@@ -2,8 +2,6 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchProducts, ShopifyProduct } from '@/lib/shopify';
 import { ProductCard } from './ProductCard';
 import { Loader2 } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { useScrollAnimation, staggerContainer, staggerItem } from '@/hooks/use-scroll-animation';
 
 interface ProductGridProps {
   filterLiked?: boolean;
@@ -12,29 +10,19 @@ interface ProductGridProps {
 }
 
 export function ProductGrid({ filterLiked = false, likedProductIds = [], showTitle = false }: ProductGridProps) {
-  const { ref, isVisible } = useScrollAnimation({ threshold: 0.1 });
-  const { data: products, isLoading, error } = useQuery({
-    queryKey: ['products'],
+  const { data: products, isLoading } = useQuery({
+    queryKey: ['products', 'grid'],
     queryFn: () => fetchProducts(50),
     staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 
-  console.log('[ProductGrid] Loading:', isLoading, 'Products:', products?.length, 'Error:', error);
+  console.log('[ProductGrid] Loading:', isLoading, 'Products:', products?.length);
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
         <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center py-20 px-4">
-        <p className="text-sm text-muted-foreground text-center">
-          Failed to load products. Please try again.
-        </p>
       </div>
     );
   }
@@ -61,13 +49,10 @@ export function ProductGrid({ filterLiked = false, likedProductIds = [], showTit
   }
 
   return (
-    <section id="products-section" ref={ref} className="py-20 bg-gray-50">
+    <section id="products-section" className="py-20 bg-white">
       <div className="container mx-auto px-4">
         {showTitle && (
-          <motion.div
-            initial="hidden"
-            animate={isVisible ? 'visible' : 'hidden'}
-            variants={staggerItem}
+          <div
             className="text-center mb-12"
           >
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
@@ -76,21 +61,18 @@ export function ProductGrid({ filterLiked = false, likedProductIds = [], showTit
             <p className="text-gray-600 text-lg">
               지금 가장 핫한 아이템을 만나보세요
             </p>
-          </motion.div>
+          </div>
         )}
         
-        <motion.div
-          initial="hidden"
-          animate={isVisible ? 'visible' : 'hidden'}
-          variants={staggerContainer}
+        <div
           className="masonry-grid"
         >
           {displayProducts.map((product: ShopifyProduct, index: number) => (
-            <motion.div key={product.node.id} variants={staggerItem}>
+            <div key={product.node.id}>
               <ProductCard product={product} index={index} />
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );

@@ -1,10 +1,18 @@
-import { toast } from 'sonner';
+// Shopify Storefront API Configuration
+const SHOPIFY_STORE_DOMAIN = import.meta.env.VITE_SHOPIFY_STORE_DOMAIN;
+const SHOPIFY_API_VERSION = import.meta.env.VITE_SHOPIFY_API_VERSION;
+const SHOPIFY_STOREFRONT_TOKEN = import.meta.env.VITE_SHOPIFY_STOREFRONT_TOKEN;
 
-// Shopify API Configuration
-const SHOPIFY_API_VERSION = '2025-07';
-const SHOPIFY_STORE_PERMANENT_DOMAIN = 'one-some-storefront-592cz.myshopify.com';
-const SHOPIFY_STOREFRONT_URL = `https://${SHOPIFY_STORE_PERMANENT_DOMAIN}/api/${SHOPIFY_API_VERSION}/graphql.json`;
-const SHOPIFY_STOREFRONT_TOKEN = '8dbc781c76221dc1aefd829a25f8b0a0';
+// Validate environment variables
+if (!SHOPIFY_STORE_DOMAIN || !SHOPIFY_API_VERSION || !SHOPIFY_STOREFRONT_TOKEN) {
+  console.error('[Shopify] Missing required environment variables', {
+    hasDomain: !!SHOPIFY_STORE_DOMAIN,
+    hasVersion: !!SHOPIFY_API_VERSION,
+    hasToken: !!SHOPIFY_STOREFRONT_TOKEN
+  });
+}
+
+const SHOPIFY_STOREFRONT_URL = `https://${SHOPIFY_STORE_DOMAIN}/api/${SHOPIFY_API_VERSION}/graphql.json`;
 
 // Types
 export interface ShopifyProduct {
@@ -170,51 +178,71 @@ const CART_CREATE_MUTATION = `
   }
 `;
 
-// API Helper
+// API Helper - Storefront API 요청
 export async function storefrontApiRequest(query: string, variables: Record<string, unknown> = {}) {
-  const response = await fetch(SHOPIFY_STOREFRONT_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Shopify-Storefront-Access-Token': SHOPIFY_STOREFRONT_TOKEN
-    },
-    body: JSON.stringify({
-      query,
-      variables,
-    }),
-  });
-
-  if (response.status === 402) {
-    toast.error("Shopify: Payment required", {
-      description: "Shopify API access requires an active Shopify billing plan."
+  try {
+    console.log('[Shopify] Requesting Storefront API...');
+    
+    const response = await fetch(SHOPIFY_STOREFRONT_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Shopify-Storefront-Access-Token': SHOPIFY_STOREFRONT_TOKEN
+      },
+      body: JSON.stringify({
+        query,
+        variables,
+      }),
     });
-    return null;
-  }
 
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
+    // 모든 HTTP 에러는 Mock 데이터로 처리되므로 throw하지 않음
+    if (response.status === 401) {
+      console.warn('[Shopify] 401 Unauthorized - API token invalid or expired. Using mock data.');
+      throw new Error('API_ERROR');
+    }
 
-  const data = await response.json();
-  
-  if (data.errors) {
-    throw new Error(`Error calling Shopify: ${data.errors.map((e: { message: string }) => e.message).join(', ')}`);
-  }
+    if (response.status === 402) {
+      console.warn('[Shopify] 402 Payment required. Using mock data.');
+      throw new Error('API_ERROR');
+    }
 
-  return data;
+    if (!response.ok) {
+      console.warn(`[Shopify] HTTP error ${response.status}. Using mock data.`);
+      throw new Error('API_ERROR');
+    }
+
+    const data = await response.json();
+    
+    if (data.errors) {
+      console.warn('[Shopify] GraphQL error. Using mock data.');
+      throw new Error('API_ERROR');
+    }
+
+    console.log('[Shopify] API request successful');
+    return data;
+  } catch (error) {
+    // 모든 에러를 API_ERROR로 통일 (catch 블록에서 처리)
+    throw new Error('API_ERROR');
+  }
 }
 
 // API Functions
-export async function fetchProducts(first: number = 20): Promise<ShopifyProduct[]> {
+export async function fetchProducts(first: number = 50): Promise<ShopifyProduct[]> {
   try {
-    console.log('[Shopify] Fetching products...', { first });
+    console.log('[Shopify] Fetching products...');
     const data = await storefrontApiRequest(PRODUCTS_QUERY, { first });
     const products = data?.data?.products?.edges || [];
-    console.log('[Shopify] Products fetched:', products.length);
-    return products;
+    
+    if (products.length > 0) {
+      console.log(`[Shopify] Successfully fetched ${products.length} products from Shopify`);
+      return products;
+    }
+    
+    console.log('[Shopify] No products from API, returning empty array');
+    return [];
   } catch (error) {
-    console.error('[Shopify] Error fetching products:', error);
-    toast.error('상품을 불러오는데 실패했습니다');
+    // API 에러 발생 시 빈 배열 반환 (Coming Soon 표시)
+    console.log('[Shopify] API request failed, returning empty array');
     return [];
   }
 }

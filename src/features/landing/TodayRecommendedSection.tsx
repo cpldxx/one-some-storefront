@@ -1,22 +1,21 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetchProducts, ShopifyProduct } from '@/lib/shopify';
-import { motion } from 'framer-motion';
-import { useScrollAnimation, staggerContainer, staggerItem } from '@/hooks/use-scroll-animation';
 import { Heart, Loader2 } from 'lucide-react';
 import { useCallback } from 'react';
 import { useLikedStore } from '@/stores/likedStore';
 
 export const TodayRecommendedSection = () => {
-  const { ref, isVisible } = useScrollAnimation({ threshold: 0.2 });
   const { likedProductIds, toggleLiked } = useLikedStore();
 
-  const { data: products, isLoading, error } = useQuery({
-    queryKey: ['products'],
-    queryFn: () => fetchProducts(20),
+  const { data: products, isLoading } = useQuery({
+    queryKey: ['products', 'recommended'],
+    queryFn: () => fetchProducts(50),
     staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    enabled: true,
   });
 
-  console.log('[TodayRecommended] Loading:', isLoading, 'Products:', products?.length, 'Error:', error);
+  console.log('[TodayRecommended] Loading:', isLoading, 'Products:', products?.length);
 
   // 첫 4개 상품 선택
   const recommendedProducts = (products || []).slice(0, 4);
@@ -39,29 +38,25 @@ export const TodayRecommendedSection = () => {
     );
   }
 
+  // 상품이 없으면 섹션을 표시하지 않음
   if (!recommendedProducts || recommendedProducts.length === 0) {
     return null;
   }
 
   return (
-    <section ref={ref} className="py-12 bg-white">
+    <section className="py-12 bg-white">
       <div className="container mx-auto px-4">
-        <motion.div
-          initial="hidden"
-          animate={isVisible ? 'visible' : 'hidden'}
-          variants={staggerContainer}
-        >
+        <div>
           {/* 섹션 타이틀 */}
-          <motion.div variants={staggerItem} className="mb-8">
+          <div className="mb-8">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
               오늘의 추천
             </h2>
             <p className="text-gray-600">지금 인기있는 상품들을 만나보세요</p>
-          </motion.div>
+          </div>
 
           {/* 추천 상품 그리드 */}
-          <motion.div
-            variants={staggerContainer}
+          <div
             className="grid grid-cols-2 md:grid-cols-4 gap-4"
           >
             {recommendedProducts.map((product: ShopifyProduct) => {
@@ -70,9 +65,8 @@ export const TodayRecommendedSection = () => {
               const price = product.node.priceRange.minVariantPrice;
 
               return (
-                <motion.div
+                <div
                   key={product.node.id}
-                  variants={staggerItem}
                   className="group"
                 >
                   <div className="bg-gray-100 rounded-lg overflow-hidden mb-3 relative aspect-square">
@@ -103,31 +97,41 @@ export const TodayRecommendedSection = () => {
 
                   {/* 상품 정보 */}
                   <div>
-                    <h3 className="font-semibold text-sm md:text-base text-gray-900 line-clamp-2 mb-2">
+                    {/* 브랜드명 */}
+                    <p className="text-xs text-gray-500 mb-1">엘그런</p>
+
+                    {/* 상품명 */}
+                    <h3 className="font-semibold text-sm text-gray-900 line-clamp-2 mb-2">
                       {product.node.title}
                     </h3>
 
-                    {/* 가격 */}
-                    <div className="flex items-center gap-2">
-                      <span className="text-red-500 font-bold text-sm md:text-base">
-                        예상가
-                      </span>
-                      <span className="text-gray-900 font-bold text-base md:text-lg">
-                        {formatPrice(price.amount)}
-                      </span>
+                    {/* 가격 정보 */}
+                    <div className="mb-2">
+                      {/* 할인율 + 현재가 */}
+                      <div className="flex items-baseline gap-2 mb-1">
+                        <span className="text-pink-600 font-bold text-lg">
+                          69%
+                        </span>
+                        <span className="text-gray-900 font-bold text-lg">
+                          {formatPrice(price.amount)}
+                        </span>
+                      </div>
+                      {/* 정가 */}
+                      <p className="text-xs text-gray-400 line-through">
+                        118,000
+                      </p>
                     </div>
 
-                    <p className="text-xs text-gray-500 line-through mt-1">
-                      정가 미정
+                    {/* 배송 정보 */}
+                    <p className="text-xs text-gray-500 bg-gray-100 rounded px-2 py-1 inline-block">
+                      무료배송
                     </p>
-
-                    <p className="text-xs text-gray-600 mt-2">무료배송</p>
                   </div>
-                </motion.div>
+                </div>
               );
             })}
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       </div>
     </section>
   );

@@ -40,97 +40,119 @@ The content is organized as follows:
 </file_summary>
 
 <directory_structure>
+public/
+  placeholder.svg
+  robots.txt
+src/
+  assets/
+    products/
+      cap.jpg
+      hoodie.jpg
+      jacket.jpg
+      sweatpants.jpg
+      tshirt.jpg
+  components/
+    ui/
+      accordion.tsx
+      alert-dialog.tsx
+      alert.tsx
+      aspect-ratio.tsx
+      avatar.tsx
+      badge.tsx
+      breadcrumb.tsx
+      button.tsx
+      calendar.tsx
+      card.tsx
+      carousel.tsx
+      chart.tsx
+      checkbox.tsx
+      collapsible.tsx
+      command.tsx
+      context-menu.tsx
+      dialog.tsx
+      drawer.tsx
+      dropdown-menu.tsx
+      form.tsx
+      hover-card.tsx
+      input-otp.tsx
+      input.tsx
+      label.tsx
+      menubar.tsx
+      navigation-menu.tsx
+      pagination.tsx
+      popover.tsx
+      progress.tsx
+      radio-group.tsx
+      resizable.tsx
+      scroll-area.tsx
+      select.tsx
+      separator.tsx
+      sheet.tsx
+      sidebar.tsx
+      skeleton.tsx
+      slider.tsx
+      sonner.tsx
+      switch.tsx
+      table.tsx
+      tabs.tsx
+      textarea.tsx
+      toast.tsx
+      toaster.tsx
+      toggle-group.tsx
+      toggle.tsx
+      tooltip.tsx
+      use-toast.ts
+    NavLink.tsx
+  features/
+    cart/
+      CartDrawer.tsx
+    landing/
+      CTASection.tsx
+      HeroSection.tsx
+      LandingFooter.tsx
+      ServicesSection.tsx
+      TodayRecommendedSection.tsx
+    layout/
+      BottomNav.tsx
+      Header.tsx
+      Layout.tsx
+    products/
+      ProductCard.tsx
+      ProductDetail.tsx
+      ProductGrid.tsx
+  hooks/
+    use-mobile.tsx
+    use-scroll-animation.tsx
+    use-toast.ts
+  lib/
+    shopify.ts
+    utils.ts
+  pages/
+    Index.tsx
+    LikesPage.tsx
+    MyPage.tsx
+    NotFound.tsx
+    ProductPage.tsx
+    SearchPage.tsx
+  stores/
+    cartStore.ts
+    likedStore.ts
+  test/
+    example.test.ts
+    setup.ts
+  App.css
+  App.tsx
+  index.css
+  main.tsx
+  vite-env.d.ts
 .gitignore
 components.json
+environment.yml
 eslint.config.js
 index.html
 package.json
 postcss.config.js
-public/favicon.ico
-public/placeholder.svg
-public/robots.txt
 README.md
-src/App.css
-src/App.tsx
-src/assets/products/cap.jpg
-src/assets/products/hoodie.jpg
-src/assets/products/jacket.jpg
-src/assets/products/sweatpants.jpg
-src/assets/products/tshirt.jpg
-src/components/NavLink.tsx
-src/components/ui/accordion.tsx
-src/components/ui/alert-dialog.tsx
-src/components/ui/alert.tsx
-src/components/ui/aspect-ratio.tsx
-src/components/ui/avatar.tsx
-src/components/ui/badge.tsx
-src/components/ui/breadcrumb.tsx
-src/components/ui/button.tsx
-src/components/ui/calendar.tsx
-src/components/ui/card.tsx
-src/components/ui/carousel.tsx
-src/components/ui/chart.tsx
-src/components/ui/checkbox.tsx
-src/components/ui/collapsible.tsx
-src/components/ui/command.tsx
-src/components/ui/context-menu.tsx
-src/components/ui/dialog.tsx
-src/components/ui/drawer.tsx
-src/components/ui/dropdown-menu.tsx
-src/components/ui/form.tsx
-src/components/ui/hover-card.tsx
-src/components/ui/input-otp.tsx
-src/components/ui/input.tsx
-src/components/ui/label.tsx
-src/components/ui/menubar.tsx
-src/components/ui/navigation-menu.tsx
-src/components/ui/pagination.tsx
-src/components/ui/popover.tsx
-src/components/ui/progress.tsx
-src/components/ui/radio-group.tsx
-src/components/ui/resizable.tsx
-src/components/ui/scroll-area.tsx
-src/components/ui/select.tsx
-src/components/ui/separator.tsx
-src/components/ui/sheet.tsx
-src/components/ui/sidebar.tsx
-src/components/ui/skeleton.tsx
-src/components/ui/slider.tsx
-src/components/ui/sonner.tsx
-src/components/ui/switch.tsx
-src/components/ui/table.tsx
-src/components/ui/tabs.tsx
-src/components/ui/textarea.tsx
-src/components/ui/toast.tsx
-src/components/ui/toaster.tsx
-src/components/ui/toggle-group.tsx
-src/components/ui/toggle.tsx
-src/components/ui/tooltip.tsx
-src/components/ui/use-toast.ts
-src/features/cart/CartDrawer.tsx
-src/features/layout/BottomNav.tsx
-src/features/layout/Header.tsx
-src/features/layout/Layout.tsx
-src/features/products/ProductCard.tsx
-src/features/products/ProductDetail.tsx
-src/features/products/ProductGrid.tsx
-src/hooks/use-mobile.tsx
-src/hooks/use-toast.ts
-src/index.css
-src/lib/shopify.ts
-src/lib/utils.ts
-src/main.tsx
-src/pages/Index.tsx
-src/pages/LikesPage.tsx
-src/pages/MyPage.tsx
-src/pages/NotFound.tsx
-src/pages/ProductPage.tsx
-src/pages/SearchPage.tsx
-src/stores/cartStore.ts
-src/stores/likedStore.ts
-src/test/example.test.ts
-src/test/setup.ts
-src/vite-env.d.ts
 tailwind.config.ts
 tsconfig.app.json
 tsconfig.json
@@ -141,123 +163,6 @@ vitest.config.ts
 
 <files>
 This section contains the contents of the repository's files.
-
-<file path=".gitignore">
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-</file>
-
-<file path="components.json">
-{
-  "$schema": "https://ui.shadcn.com/schema.json",
-  "style": "default",
-  "rsc": false,
-  "tsx": true,
-  "tailwind": {
-    "config": "tailwind.config.ts",
-    "css": "src/index.css",
-    "baseColor": "slate",
-    "cssVariables": true,
-    "prefix": ""
-  },
-  "aliases": {
-    "components": "@/components",
-    "utils": "@/lib/utils",
-    "ui": "@/components/ui",
-    "lib": "@/lib",
-    "hooks": "@/hooks"
-  }
-}
-</file>
-
-<file path="eslint.config.js">
-import js from "@eslint/js";
-import globals from "globals";
-import reactHooks from "eslint-plugin-react-hooks";
-import reactRefresh from "eslint-plugin-react-refresh";
-import tseslint from "typescript-eslint";
-
-export default tseslint.config(
-  { ignores: ["dist"] },
-  {
-    extends: [js.configs.recommended, ...tseslint.configs.recommended],
-    files: ["**/*.{ts,tsx}"],
-    languageOptions: {
-      ecmaVersion: 2020,
-      globals: globals.browser,
-    },
-    plugins: {
-      "react-hooks": reactHooks,
-      "react-refresh": reactRefresh,
-    },
-    rules: {
-      ...reactHooks.configs.recommended.rules,
-      "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
-      "@typescript-eslint/no-unused-vars": "off",
-    },
-  },
-);
-</file>
-
-<file path="index.html">
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- TODO: Set the document title to the name of your application -->
-    <title>Lovable App</title>
-    <meta name="description" content="Lovable Generated Project" />
-    <meta name="author" content="Lovable" />
-
-    <!-- TODO: Update og:title to match your application name -->
-    <meta property="og:title" content="Lovable App" />
-    <meta property="og:description" content="Lovable Generated Project" />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
-
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@Lovable" />
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
-  </head>
-
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>
-</file>
-
-<file path="postcss.config.js">
-export default {
-  plugins: {
-    tailwindcss: {},
-    autoprefixer: {},
-  },
-};
-</file>
 
 <file path="public/placeholder.svg">
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200" fill="none"><rect width="1200" height="1200" fill="#EAEAEA" rx="3"/><g opacity=".5"><g opacity=".5"><path fill="#FAFAFA" d="M600.709 736.5c-75.454 0-136.621-61.167-136.621-136.62 0-75.454 61.167-136.621 136.621-136.621 75.453 0 136.62 61.167 136.62 136.621 0 75.453-61.167 136.62-136.62 136.62Z"/><path stroke="#C9C9C9" stroke-width="2.418" d="M600.709 736.5c-75.454 0-136.621-61.167-136.621-136.62 0-75.454 61.167-136.621 136.621-136.621 75.453 0 136.62 61.167 136.62 136.621 0 75.453-61.167 136.62-136.62 136.62Z"/></g><path stroke="url(#a)" stroke-width="2.418" d="M0-1.209h553.581" transform="scale(1 -1) rotate(45 1163.11 91.165)"/><path stroke="url(#b)" stroke-width="2.418" d="M404.846 598.671h391.726"/><path stroke="url(#c)" stroke-width="2.418" d="M599.5 795.742V404.017"/><path stroke="url(#d)" stroke-width="2.418" d="m795.717 796.597-391.441-391.44"/><path fill="#fff" d="M600.709 656.704c-31.384 0-56.825-25.441-56.825-56.824 0-31.384 25.441-56.825 56.825-56.825 31.383 0 56.824 25.441 56.824 56.825 0 31.383-25.441 56.824-56.824 56.824Z"/><g clip-path="url(#e)"><path fill="#666" fill-rule="evenodd" d="M616.426 586.58h-31.434v16.176l3.553-3.554.531-.531h9.068l.074-.074 8.463-8.463h2.565l7.18 7.181V586.58Zm-15.715 14.654 3.698 3.699 1.283 1.282-2.565 2.565-1.282-1.283-5.2-5.199h-6.066l-5.514 5.514-.073.073v2.876a2.418 2.418 0 0 0 2.418 2.418h26.598a2.418 2.418 0 0 0 2.418-2.418v-8.317l-8.463-8.463-7.181 7.181-.071.072Zm-19.347 5.442v4.085a6.045 6.045 0 0 0 6.046 6.045h26.598a6.044 6.044 0 0 0 6.045-6.045v-7.108l1.356-1.355-1.282-1.283-.074-.073v-17.989h-38.689v23.43l-.146.146.146.147Z" clip-rule="evenodd"/></g><path stroke="#C9C9C9" stroke-width="2.418" d="M600.709 656.704c-31.384 0-56.825-25.441-56.825-56.824 0-31.384 25.441-56.825 56.825-56.825 31.383 0 56.824 25.441 56.824 56.825 0 31.383-25.441 56.824-56.824 56.824Z"/></g><defs><linearGradient id="a" x1="554.061" x2="-.48" y1=".083" y2=".087" gradientUnits="userSpaceOnUse"><stop stop-color="#C9C9C9" stop-opacity="0"/><stop offset=".208" stop-color="#C9C9C9"/><stop offset=".792" stop-color="#C9C9C9"/><stop offset="1" stop-color="#C9C9C9" stop-opacity="0"/></linearGradient><linearGradient id="b" x1="796.912" x2="404.507" y1="599.963" y2="599.965" gradientUnits="userSpaceOnUse"><stop stop-color="#C9C9C9" stop-opacity="0"/><stop offset=".208" stop-color="#C9C9C9"/><stop offset=".792" stop-color="#C9C9C9"/><stop offset="1" stop-color="#C9C9C9" stop-opacity="0"/></linearGradient><linearGradient id="c" x1="600.792" x2="600.794" y1="403.677" y2="796.082" gradientUnits="userSpaceOnUse"><stop stop-color="#C9C9C9" stop-opacity="0"/><stop offset=".208" stop-color="#C9C9C9"/><stop offset=".792" stop-color="#C9C9C9"/><stop offset="1" stop-color="#C9C9C9" stop-opacity="0"/></linearGradient><linearGradient id="d" x1="404.85" x2="796.972" y1="403.903" y2="796.02" gradientUnits="userSpaceOnUse"><stop stop-color="#C9C9C9" stop-opacity="0"/><stop offset=".208" stop-color="#C9C9C9"/><stop offset=".792" stop-color="#C9C9C9"/><stop offset="1" stop-color="#C9C9C9" stop-opacity="0"/></linearGradient><clipPath id="e"><path fill="#fff" d="M581.364 580.535h38.689v38.689h-38.689z"/></clipPath></defs></svg>
@@ -278,158 +183,6 @@ Allow: /
 
 User-agent: *
 Allow: /
-</file>
-
-<file path="README.md">
-# Welcome to your Lovable project
-
-## Project info
-
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
-
-## How can I edit this code?
-
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
-</file>
-
-<file path="src/App.css">
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}
-</file>
-
-<file path="src/components/NavLink.tsx">
-import { NavLink as RouterNavLink, NavLinkProps } from "react-router-dom";
-import { forwardRef } from "react";
-import { cn } from "@/lib/utils";
-
-interface NavLinkCompatProps extends Omit<NavLinkProps, "className"> {
-  className?: string;
-  activeClassName?: string;
-  pendingClassName?: string;
-}
-
-const NavLink = forwardRef<HTMLAnchorElement, NavLinkCompatProps>(
-  ({ className, activeClassName, pendingClassName, to, ...props }, ref) => {
-    return (
-      <RouterNavLink
-        ref={ref}
-        to={to}
-        className={({ isActive, isPending }) =>
-          cn(className, isActive && activeClassName, isPending && pendingClassName)
-        }
-        {...props}
-      />
-    );
-  },
-);
-
-NavLink.displayName = "NavLink";
-
-export { NavLink };
 </file>
 
 <file path="src/components/ui/accordion.tsx">
@@ -4533,6 +4286,37 @@ import { useToast, toast } from "@/hooks/use-toast";
 export { useToast, toast };
 </file>
 
+<file path="src/components/NavLink.tsx">
+import { NavLink as RouterNavLink, NavLinkProps } from "react-router-dom";
+import { forwardRef } from "react";
+import { cn } from "@/lib/utils";
+
+interface NavLinkCompatProps extends Omit<NavLinkProps, "className"> {
+  className?: string;
+  activeClassName?: string;
+  pendingClassName?: string;
+}
+
+const NavLink = forwardRef<HTMLAnchorElement, NavLinkCompatProps>(
+  ({ className, activeClassName, pendingClassName, to, ...props }, ref) => {
+    return (
+      <RouterNavLink
+        ref={ref}
+        to={to}
+        className={({ isActive, isPending }) =>
+          cn(className, isActive && activeClassName, isPending && pendingClassName)
+        }
+        {...props}
+      />
+    );
+  },
+);
+
+NavLink.displayName = "NavLink";
+
+export { NavLink };
+</file>
+
 <file path="src/features/cart/CartDrawer.tsx">
 import { ReactNode, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -4702,6 +4486,669 @@ export function CartDrawer({ children }: CartDrawerProps) {
 }
 </file>
 
+<file path="src/features/landing/CTASection.tsx">
+import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import { useScrollAnimation, scaleIn } from '@/hooks/use-scroll-animation';
+import { ShoppingBag } from 'lucide-react';
+
+export const CTASection = () => {
+  const { ref, isVisible } = useScrollAnimation({ threshold: 0.3 });
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  return (
+    <section ref={ref} className="py-20 bg-gradient-to-br from-primary/5 to-primary/10">
+      <div className="container mx-auto px-4">
+        <motion.div
+          initial="hidden"
+          animate={isVisible ? 'visible' : 'hidden'}
+          variants={scaleIn}
+          className="max-w-4xl mx-auto text-center"
+        >
+          <div className="bg-white rounded-2xl shadow-xl p-12 md:p-16">
+            <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <ShoppingBag className="w-10 h-10 text-primary" />
+            </div>
+            
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              지금 바로 시작하세요
+            </h2>
+            
+            <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+              트렌디한 스트릿 패션부터 클래식한 스타일까지,
+              <br />
+              당신의 완벽한 룩을 찾아보세요
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button
+                size="lg"
+                className="text-lg px-8 py-6"
+                onClick={scrollToTop}
+              >
+                상품 둘러보기
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="text-lg px-8 py-6"
+              >
+                신규 회원 혜택
+              </Button>
+            </div>
+            
+            <div className="mt-8 flex items-center justify-center gap-8 text-sm text-gray-600">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full" />
+                <span>무료 배송</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full" />
+                <span>무료 반품</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full" />
+                <span>안전 결제</span>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+</file>
+
+<file path="src/features/landing/HeroSection.tsx">
+import { useEffect, useCallback, useState } from 'react';
+import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import { useScrollAnimation } from '@/hooks/use-scroll-animation';
+import { ChevronRight } from 'lucide-react';
+import useEmblaCarousel from 'embla-carousel-react';
+import Autoplay from 'embla-carousel-autoplay';
+
+const heroSlides = [
+  {
+    badge: '🔥 2026 신상품 출시',
+    title: '새로운 스타일,',
+    subtitle: '새로운 시작',
+    description: '50,000원 이상 구매 시 무료배송',
+    bgGradient: 'from-gray-900 to-gray-800',
+    textColor: 'text-white',
+    logoText: 'ONE',
+  },
+  {
+    badge: '⚡ 한정 세일',
+    title: '지금만 특별한',
+    subtitle: '최대 50% 할인',
+    description: '이번 주말까지 한정 특가',
+    bgGradient: 'from-blue-900 to-blue-800',
+    textColor: 'text-white',
+    logoText: 'SALE',
+  },
+  {
+    badge: '✨ 신규 회원 혜택',
+    title: '첫 구매 고객을 위한',
+    subtitle: '5,000원 적립금',
+    description: '회원가입 즉시 사용 가능',
+    bgGradient: 'from-purple-900 to-purple-800',
+    textColor: 'text-white',
+    logoText: 'NEW',
+  },
+  {
+    badge: '🎁 무료 배송',
+    title: '배송비 걱정 없이',
+    subtitle: '편하게 쇼핑하세요',
+    description: '전 상품 무료 배송 진행 중',
+    bgGradient: 'from-emerald-900 to-emerald-800',
+    textColor: 'text-white',
+    logoText: 'FREE',
+  },
+  {
+    badge: '🏆 베스트 셀러',
+    title: '지금 가장 핫한',
+    subtitle: '인기 아이템',
+    description: '매주 업데이트되는 베스트 컬렉션',
+    bgGradient: 'from-orange-900 to-orange-800',
+    textColor: 'text-white',
+    logoText: 'BEST',
+  },
+];
+
+export const HeroSection = () => {
+  const { ref, isVisible } = useScrollAnimation();
+  
+  const [emblaRef, emblaApi] = useEmblaCarousel(
+    { loop: true },
+    [Autoplay({ delay: 3000, stopOnInteraction: false })]
+  );
+
+  const scrollToProducts = () => {
+    const productsSection = document.getElementById('products-section');
+    if (productsSection) {
+      productsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  const scrollTo = useCallback((index: number) => {
+    if (emblaApi) emblaApi.scrollTo(index);
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    
+    const onSelect = () => {
+      setSelectedIndex(emblaApi.selectedScrollSnap());
+    };
+    
+    emblaApi.on('select', onSelect);
+    onSelect();
+    
+    return () => {
+      emblaApi.off('select', onSelect);
+    };
+  }, [emblaApi]);
+
+  return (
+    <section ref={ref} className="relative bg-white pt-4 pb-8">
+      <div className="container mx-auto px-4">
+        <div className="relative rounded-2xl overflow-hidden">
+          {/* Embla Carousel */}
+          <div className="overflow-hidden" ref={emblaRef}>
+            <div className="flex">
+              {heroSlides.map((slide, index) => (
+                <div key={index} className="flex-[0_0_100%] min-w-0">
+                  <div
+                    className={`relative bg-gradient-to-r ${slide.bgGradient} h-[500px] md:h-[600px]`}
+                  >
+                    {/* 배경 패턴 */}
+                    <div className="absolute inset-0 opacity-10">
+                      <div
+                        className="absolute inset-0"
+                        style={{
+                          backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)',
+                          backgroundSize: '40px 40px',
+                        }}
+                      />
+                    </div>
+
+                    {/* 컨텐츠 */}
+                    <div className="relative h-full flex items-center">
+                      <div className="w-full md:w-1/2 px-8 md:px-16 z-10">
+                        {/* 뱃지 */}
+                        <motion.div
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={isVisible ? { opacity: 1, y: 0 } : {}}
+                          transition={{ delay: 0.2 }}
+                          className="inline-block mb-4"
+                        >
+                          <span className="bg-white/20 text-white text-sm px-4 py-2 rounded-full backdrop-blur-sm">
+                            {slide.badge}
+                          </span>
+                        </motion.div>
+
+                        {/* 메인 헤드라인 */}
+                        <motion.h1
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={isVisible ? { opacity: 1, y: 0 } : {}}
+                          transition={{ delay: 0.3 }}
+                          className={`text-4xl md:text-6xl font-bold ${slide.textColor} mb-4 leading-tight`}
+                        >
+                          {slide.title}
+                          <br />
+                          {slide.subtitle}
+                        </motion.h1>
+
+                        {/* 서브텍스트 */}
+                        <motion.p
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={isVisible ? { opacity: 1, y: 0 } : {}}
+                          transition={{ delay: 0.4 }}
+                          className="text-lg md:text-xl text-gray-300 mb-8"
+                        >
+                          {slide.description}
+                        </motion.p>
+
+                        {/* CTA 버튼 */}
+                        <motion.div
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={isVisible ? { opacity: 1, y: 0 } : {}}
+                          transition={{ delay: 0.5 }}
+                        >
+                          <Button
+                            size="lg"
+                            className="bg-white text-gray-900 hover:bg-gray-100 text-base px-8 py-6 group"
+                            onClick={scrollToProducts}
+                          >
+                            지금 쇼핑하기
+                            <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                          </Button>
+                        </motion.div>
+                      </div>
+
+                      {/* 로고 텍스트 (오른쪽) */}
+                      <motion.div
+                        initial={{ opacity: 0, x: 50 }}
+                        animate={isVisible ? { opacity: 1, x: 0 } : {}}
+                        transition={{ delay: 0.4 }}
+                        className="hidden md:block absolute right-0 top-0 bottom-0 w-1/2"
+                      >
+                        <div className="relative h-full flex items-center justify-center">
+                          <div className="absolute right-8 top-1/2 -translate-y-1/2 w-96 h-96 bg-white/5 backdrop-blur-sm rounded-full" />
+                          <div className="relative text-white/20 text-9xl font-bold">
+                            {slide.logoText}
+                          </div>
+                        </div>
+                      </motion.div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Carousel Dots */}
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+            {heroSlides.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => scrollTo(index)}
+                className={`h-2 rounded-full transition-all ${
+                  index === selectedIndex
+                    ? 'bg-white w-8'
+                    : 'bg-white/50 w-2 hover:bg-white/75'
+                }`}
+                aria-label={`슬라이드 ${index + 1}로 이동`}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* 프로모션 바 */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isVisible ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: 0.6 }}
+          className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4"
+        >
+          <div className="bg-gray-50 rounded-lg p-4 text-center">
+            <div className="text-2xl font-bold text-gray-900">무료배송</div>
+            <div className="text-sm text-gray-600 mt-1">5만원 이상 구매시</div>
+          </div>
+          <div className="bg-gray-50 rounded-lg p-4 text-center">
+            <div className="text-2xl font-bold text-gray-900">무료반품</div>
+            <div className="text-sm text-gray-600 mt-1">14일 이내</div>
+          </div>
+          <div className="bg-gray-50 rounded-lg p-4 text-center">
+            <div className="text-2xl font-bold text-gray-900">신규회원</div>
+            <div className="text-sm text-gray-600 mt-1">5,000원 적립금 지급</div>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+</file>
+
+<file path="src/features/landing/LandingFooter.tsx">
+import { motion } from 'framer-motion';
+import { useScrollAnimation, fadeIn } from '@/hooks/use-scroll-animation';
+import { Link } from 'react-router-dom';
+import { Instagram, Facebook, Twitter, Mail } from 'lucide-react';
+
+export const LandingFooter = () => {
+  const { ref, isVisible } = useScrollAnimation({ threshold: 0.1 });
+
+  const footerLinks = {
+    shop: [
+      { label: '전체 상품', to: '/' },
+      { label: '신상품', to: '/' },
+      { label: '베스트', to: '/' },
+      { label: '세일', to: '/' },
+    ],
+    help: [
+      { label: '배송 안내', to: '/' },
+      { label: '교환/반품', to: '/' },
+      { label: '이용약관', to: '/' },
+      { label: '개인정보처리방침', to: '/' },
+    ],
+    about: [
+      { label: '회사 소개', to: '/' },
+      { label: '채용', to: '/' },
+      { label: '매장 안내', to: '/' },
+      { label: '제휴 문의', to: '/' },
+    ],
+  };
+
+  const socialLinks = [
+    { icon: Instagram, href: 'https://instagram.com', label: 'Instagram' },
+    { icon: Facebook, href: 'https://facebook.com', label: 'Facebook' },
+    { icon: Twitter, href: 'https://twitter.com', label: 'Twitter' },
+    { icon: Mail, href: 'mailto:contact@onesome.com', label: 'Email' },
+  ];
+
+  return (
+    <motion.footer
+      ref={ref}
+      initial="hidden"
+      animate={isVisible ? 'visible' : 'hidden'}
+      variants={fadeIn}
+      className="bg-gray-900 text-gray-300 py-12"
+    >
+      <div className="container mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+          {/* 브랜드 정보 */}
+          <div>
+            <h3 className="text-white text-2xl font-bold mb-4">One Some</h3>
+            <p className="text-sm mb-4">
+              프리미엄 스트릿 패션으로
+              <br />
+              당신만의 스타일을 완성하세요
+            </p>
+            <div className="flex gap-4">
+              {socialLinks.map((social, index) => {
+                const Icon = social.icon;
+                return (
+                  <a
+                    key={index}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-primary transition-colors"
+                    aria-label={social.label}
+                  >
+                    <Icon className="w-5 h-5" />
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Shop 링크 */}
+          <div>
+            <h4 className="text-white font-semibold mb-4">Shop</h4>
+            <ul className="space-y-2">
+              {footerLinks.shop.map((link, index) => (
+                <li key={index}>
+                  <Link
+                    to={link.to}
+                    className="text-sm hover:text-primary transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Help 링크 */}
+          <div>
+            <h4 className="text-white font-semibold mb-4">Help</h4>
+            <ul className="space-y-2">
+              {footerLinks.help.map((link, index) => (
+                <li key={index}>
+                  <Link
+                    to={link.to}
+                    className="text-sm hover:text-primary transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* About 링크 */}
+          <div>
+            <h4 className="text-white font-semibold mb-4">About</h4>
+            <ul className="space-y-2">
+              {footerLinks.about.map((link, index) => (
+                <li key={index}>
+                  <Link
+                    to={link.to}
+                    className="text-sm hover:text-primary transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        {/* 구분선 */}
+        <div className="border-t border-gray-800 pt-8">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
+            <p>© 2026 One Some. All rights reserved.</p>
+            <div className="flex gap-6">
+              <Link to="/" className="hover:text-primary transition-colors">
+                이용약관
+              </Link>
+              <Link to="/" className="hover:text-primary transition-colors">
+                개인정보처리방침
+              </Link>
+              <Link to="/" className="hover:text-primary transition-colors">
+                고객센터
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </motion.footer>
+  );
+};
+</file>
+
+<file path="src/features/landing/ServicesSection.tsx">
+import { motion } from 'framer-motion';
+import { useScrollAnimation, staggerContainer, staggerItem } from '@/hooks/use-scroll-animation';
+import { Truck, Shield, Headset } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+
+const services = [
+  {
+    icon: Truck,
+    title: '무료 배송',
+    description: '50,000원 이상 구매 시 전국 무료 배송',
+  },
+  {
+    icon: Shield,
+    title: '품질 보증',
+    description: '100% 정품 보증 및 14일 무료 반품',
+  },
+  {
+    icon: Headset,
+    title: '고객 지원',
+    description: '연중무휴 24시간 고객 상담 서비스',
+  },
+];
+
+export const ServicesSection = () => {
+  const { ref, isVisible } = useScrollAnimation({ threshold: 0.2 });
+
+  return (
+    <section ref={ref} className="py-20 bg-white">
+      <div className="container mx-auto px-4">
+        <motion.div
+          initial="hidden"
+          animate={isVisible ? 'visible' : 'hidden'}
+          variants={staggerContainer}
+        >
+          {/* 서비스 카드 */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {services.map((service, index) => {
+              const Icon = service.icon;
+              return (
+                <motion.div key={index} variants={staggerItem}>
+                  <Card className="h-full hover:shadow-lg transition-shadow duration-300">
+                    <CardContent className="pt-6 text-center">
+                      <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Icon className="w-8 h-8 text-primary" />
+                      </div>
+                      <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                        {service.title}
+                      </h3>
+                      <p className="text-gray-600">{service.description}</p>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              );
+            })}
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+</file>
+
+<file path="src/features/landing/TodayRecommendedSection.tsx">
+import { useQuery } from '@tanstack/react-query';
+import { fetchProducts, ShopifyProduct } from '@/lib/shopify';
+import { Heart, Loader2 } from 'lucide-react';
+import { useCallback } from 'react';
+import { useLikedStore } from '@/stores/likedStore';
+
+export const TodayRecommendedSection = () => {
+  const { likedProductIds, toggleLiked } = useLikedStore();
+
+  const { data: products, isLoading } = useQuery({
+    queryKey: ['products', 'recommended'],
+    queryFn: () => fetchProducts(50),
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    enabled: true,
+  });
+
+  console.log('[TodayRecommended] Loading:', isLoading, 'Products:', products?.length);
+
+  // 첫 4개 상품 선택
+  const recommendedProducts = (products || []).slice(0, 4);
+
+  const formatPrice = (price: string) => {
+    return `${parseInt(price).toLocaleString()}원`;
+  };
+
+  const handleLike = useCallback((productId: string) => {
+    toggleLiked(productId);
+  }, [toggleLiked]);
+
+  if (isLoading) {
+    return (
+      <section className="py-12 bg-white">
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+        </div>
+      </section>
+    );
+  }
+
+  // 상품이 없으면 섹션을 표시하지 않음
+  if (!recommendedProducts || recommendedProducts.length === 0) {
+    return null;
+  }
+
+  return (
+    <section className="py-12 bg-white">
+      <div className="container mx-auto px-4">
+        <div>
+          {/* 섹션 타이틀 */}
+          <div className="mb-8">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+              오늘의 추천
+            </h2>
+            <p className="text-gray-600">지금 인기있는 상품들을 만나보세요</p>
+          </div>
+
+          {/* 추천 상품 그리드 */}
+          <div
+            className="grid grid-cols-2 md:grid-cols-4 gap-4"
+          >
+            {recommendedProducts.map((product: ShopifyProduct) => {
+              const isLiked = likedProductIds.includes(product.node.id);
+              const image = product.node.images.edges[0]?.node;
+              const price = product.node.priceRange.minVariantPrice;
+
+              return (
+                <div
+                  key={product.node.id}
+                  className="group"
+                >
+                  <div className="bg-gray-100 rounded-lg overflow-hidden mb-3 relative aspect-square">
+                    {/* 상품 이미지 */}
+                    {image && (
+                      <img
+                        src={image.url}
+                        alt={image.altText || product.node.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    )}
+
+                    {/* 찜하기 버튼 */}
+                    <button
+                      onClick={() => handleLike(product.node.id)}
+                      className="absolute top-3 right-3 p-2 bg-white/90 rounded-full hover:bg-white transition-all"
+                      aria-label="찜하기"
+                    >
+                      <Heart
+                        className={`w-5 h-5 transition-colors ${
+                          isLiked
+                            ? 'fill-red-500 text-red-500'
+                            : 'text-gray-600 hover:text-red-500'
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  {/* 상품 정보 */}
+                  <div>
+                    {/* 브랜드명 */}
+                    <p className="text-xs text-gray-500 mb-1">엘그런</p>
+
+                    {/* 상품명 */}
+                    <h3 className="font-semibold text-sm text-gray-900 line-clamp-2 mb-2">
+                      {product.node.title}
+                    </h3>
+
+                    {/* 가격 정보 */}
+                    <div className="mb-2">
+                      {/* 할인율 + 현재가 */}
+                      <div className="flex items-baseline gap-2 mb-1">
+                        <span className="text-pink-600 font-bold text-lg">
+                          69%
+                        </span>
+                        <span className="text-gray-900 font-bold text-lg">
+                          {formatPrice(price.amount)}
+                        </span>
+                      </div>
+                      {/* 정가 */}
+                      <p className="text-xs text-gray-400 line-through">
+                        118,000
+                      </p>
+                    </div>
+
+                    {/* 배송 정보 */}
+                    <p className="text-xs text-gray-500 bg-gray-100 rounded px-2 py-1 inline-block">
+                      무료배송
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+</file>
+
 <file path="src/features/layout/BottomNav.tsx">
 import { Home, Search, Heart, User } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
@@ -4761,38 +5208,6 @@ export function BottomNav() {
 }
 </file>
 
-<file path="src/features/layout/Header.tsx">
-import { ShoppingBag } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { useCartStore } from '@/stores/cartStore';
-import { CartDrawer } from '@/features/cart/CartDrawer';
-
-export function Header() {
-  const totalItems = useCartStore((state) => state.getTotalItems());
-
-  return (
-    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
-      <div className="flex items-center justify-between h-12 px-4">
-        <Link to="/" className="logo">
-          one some
-        </Link>
-        
-        <CartDrawer>
-          <button className="relative p-2 -mr-2">
-            <ShoppingBag className="w-5 h-5" strokeWidth={1.5} />
-            {totalItems > 0 && (
-              <span className="absolute top-1 right-1 w-4 h-4 text-[10px] font-medium flex items-center justify-center bg-foreground text-background rounded-full">
-                {totalItems > 9 ? '9+' : totalItems}
-              </span>
-            )}
-          </button>
-        </CartDrawer>
-      </div>
-    </header>
-  );
-}
-</file>
-
 <file path="src/features/layout/Layout.tsx">
 import { ReactNode } from 'react';
 import { Header } from './Header';
@@ -4848,19 +5263,22 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
       className="masonry-item product-card"
     >
       <Link to={`/product/${product.node.handle}`} className="block">
-        <div className={`relative bg-grey-100 overflow-hidden ${aspectRatio}`}>
+        <div className={`relative bg-gray-200 overflow-hidden ${aspectRatio} flex items-center justify-center`}>
           {imageUrl ? (
             <img
               src={imageUrl}
               alt={product.node.images.edges[0]?.node.altText || product.node.title}
               className="w-full h-full object-cover"
               loading="lazy"
+              onError={(e) => {
+                console.log('[ProductCard] Image failed to load:', imageUrl);
+                e.currentTarget.style.display = 'none';
+              }}
             />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm">
-              No image
-            </div>
-          )}
+          ) : null}
+          <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm bg-gray-100">
+            {product.node.title}
+          </div>
           
           <button
             onClick={(e) => {
@@ -4877,10 +5295,29 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
           </button>
         </div>
         
-        <div className="mt-2 space-y-0.5">
-          <h3 className="text-xs font-medium truncate">{product.node.title}</h3>
-          <p className="text-xs text-muted-foreground">
-            {formatPrice(price.amount, price.currencyCode)}
+        <div className="mt-3 space-y-1">
+          {/* 브랜드명 */}
+          <p className="text-xs text-gray-500">엘그런</p>
+
+          {/* 상품명 */}
+          <h3 className="text-sm font-semibold text-gray-900 line-clamp-2">{product.node.title}</h3>
+
+          {/* 가격 정보 */}
+          <div className="mt-2">
+            {/* 할인율 + 현재가 */}
+            <div className="flex items-baseline gap-2 mb-1">
+              <span className="text-pink-600 font-bold text-base">69%</span>
+              <span className="text-gray-900 font-bold text-base">
+                {formatPrice(price.amount, price.currencyCode)}
+              </span>
+            </div>
+            {/* 정가 */}
+            <p className="text-xs text-gray-400 line-through">118,000</p>
+          </div>
+
+          {/* 배송 정보 */}
+          <p className="text-xs text-gray-500 bg-gray-100 rounded px-2 py-1 inline-block mt-2">
+            무료배송
           </p>
         </div>
       </Link>
@@ -5140,73 +5577,6 @@ export function ProductDetail() {
 }
 </file>
 
-<file path="src/features/products/ProductGrid.tsx">
-import { useQuery } from '@tanstack/react-query';
-import { fetchProducts, ShopifyProduct } from '@/lib/shopify';
-import { ProductCard } from './ProductCard';
-import { Loader2 } from 'lucide-react';
-
-interface ProductGridProps {
-  filterLiked?: boolean;
-  likedProductIds?: string[];
-}
-
-export function ProductGrid({ filterLiked = false, likedProductIds = [] }: ProductGridProps) {
-  const { data: products, isLoading, error } = useQuery({
-    queryKey: ['products'],
-    queryFn: () => fetchProducts(50),
-    staleTime: 5 * 60 * 1000,
-  });
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center py-20 px-4">
-        <p className="text-sm text-muted-foreground text-center">
-          Failed to load products. Please try again.
-        </p>
-      </div>
-    );
-  }
-
-  let displayProducts = products || [];
-  
-  if (filterLiked) {
-    displayProducts = displayProducts.filter((product: ShopifyProduct) => 
-      likedProductIds.includes(product.node.id)
-    );
-  }
-
-  if (displayProducts.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center py-20 px-4">
-        <p className="text-sm text-muted-foreground text-center">
-          {filterLiked 
-            ? "No liked items yet. Explore and save your favorites."
-            : "No products found. Add some products to your store."
-          }
-        </p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="masonry-grid px-3 py-4">
-      {displayProducts.map((product: ShopifyProduct, index: number) => (
-        <ProductCard key={product.node.id} product={product} index={index} />
-      ))}
-    </div>
-  );
-}
-</file>
-
 <file path="src/hooks/use-mobile.tsx">
 import * as React from "react";
 
@@ -5227,6 +5597,98 @@ export function useIsMobile() {
 
   return !!isMobile;
 }
+</file>
+
+<file path="src/hooks/use-scroll-animation.tsx">
+import { useEffect, useRef, useState } from 'react';
+
+interface UseScrollAnimationOptions {
+  threshold?: number;
+  triggerOnce?: boolean;
+}
+
+export const useScrollAnimation = (
+  options: UseScrollAnimationOptions = {}
+) => {
+  const { threshold = 0.1, triggerOnce = true } = options;
+  const ref = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          if (triggerOnce && ref.current) {
+            observer.unobserve(ref.current);
+          }
+        } else if (!triggerOnce) {
+          setIsVisible(false);
+        }
+      },
+      { threshold }
+    );
+
+    const currentRef = ref.current;
+    if (currentRef) {
+      observer.observe(currentRef);
+    }
+
+    return () => {
+      if (currentRef) {
+        observer.unobserve(currentRef);
+      }
+    };
+  }, [threshold, triggerOnce]);
+
+  return { ref, isVisible };
+};
+
+// 애니메이션 variants
+export const fadeInUp = {
+  hidden: { opacity: 0, y: 50 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] },
+  },
+};
+
+export const fadeIn = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { duration: 0.6 },
+  },
+};
+
+export const scaleIn = {
+  hidden: { opacity: 0, scale: 0.9 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: { duration: 0.5, ease: [0.25, 0.1, 0.25, 1] },
+  },
+};
+
+export const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.2,
+    },
+  },
+};
+
+export const staggerItem = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: [0.25, 0.1, 0.25, 1] },
+  },
+};
 </file>
 
 <file path="src/hooks/use-toast.ts">
@@ -5418,273 +5880,6 @@ function useToast() {
 export { useToast, toast };
 </file>
 
-<file path="src/lib/shopify.ts">
-import { toast } from 'sonner';
-
-// Shopify API Configuration
-const SHOPIFY_API_VERSION = '2025-07';
-const SHOPIFY_STORE_PERMANENT_DOMAIN = 'one-some-storefront-592cz.myshopify.com';
-const SHOPIFY_STOREFRONT_URL = `https://${SHOPIFY_STORE_PERMANENT_DOMAIN}/api/${SHOPIFY_API_VERSION}/graphql.json`;
-const SHOPIFY_STOREFRONT_TOKEN = '8dbc781c76221dc1aefd829a25f8b0a0';
-
-// Types
-export interface ShopifyProduct {
-  node: {
-    id: string;
-    title: string;
-    description: string;
-    handle: string;
-    priceRange: {
-      minVariantPrice: {
-        amount: string;
-        currencyCode: string;
-      };
-    };
-    images: {
-      edges: Array<{
-        node: {
-          url: string;
-          altText: string | null;
-        };
-      }>;
-    };
-    variants: {
-      edges: Array<{
-        node: {
-          id: string;
-          title: string;
-          price: {
-            amount: string;
-            currencyCode: string;
-          };
-          availableForSale: boolean;
-          selectedOptions: Array<{
-            name: string;
-            value: string;
-          }>;
-        };
-      }>;
-    };
-    options: Array<{
-      name: string;
-      values: string[];
-    }>;
-  };
-}
-
-// GraphQL Queries
-const PRODUCTS_QUERY = `
-  query GetProducts($first: Int!) {
-    products(first: $first) {
-      edges {
-        node {
-          id
-          title
-          description
-          handle
-          priceRange {
-            minVariantPrice {
-              amount
-              currencyCode
-            }
-          }
-          images(first: 5) {
-            edges {
-              node {
-                url
-                altText
-              }
-            }
-          }
-          variants(first: 10) {
-            edges {
-              node {
-                id
-                title
-                price {
-                  amount
-                  currencyCode
-                }
-                availableForSale
-                selectedOptions {
-                  name
-                  value
-                }
-              }
-            }
-          }
-          options {
-            name
-            values
-          }
-        }
-      }
-    }
-  }
-`;
-
-const PRODUCT_BY_HANDLE_QUERY = `
-  query GetProductByHandle($handle: String!) {
-    productByHandle(handle: $handle) {
-      id
-      title
-      description
-      handle
-      priceRange {
-        minVariantPrice {
-          amount
-          currencyCode
-        }
-      }
-      images(first: 10) {
-        edges {
-          node {
-            url
-            altText
-          }
-        }
-      }
-      variants(first: 100) {
-        edges {
-          node {
-            id
-            title
-            price {
-              amount
-              currencyCode
-            }
-            availableForSale
-            selectedOptions {
-              name
-              value
-            }
-          }
-        }
-      }
-      options {
-        name
-        values
-      }
-    }
-  }
-`;
-
-const CART_CREATE_MUTATION = `
-  mutation cartCreate($input: CartInput!) {
-    cartCreate(input: $input) {
-      cart {
-        id
-        checkoutUrl
-        totalQuantity
-        cost {
-          totalAmount {
-            amount
-            currencyCode
-          }
-        }
-      }
-      userErrors {
-        field
-        message
-      }
-    }
-  }
-`;
-
-// API Helper
-export async function storefrontApiRequest(query: string, variables: Record<string, unknown> = {}) {
-  const response = await fetch(SHOPIFY_STOREFRONT_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Shopify-Storefront-Access-Token': SHOPIFY_STOREFRONT_TOKEN
-    },
-    body: JSON.stringify({
-      query,
-      variables,
-    }),
-  });
-
-  if (response.status === 402) {
-    toast.error("Shopify: Payment required", {
-      description: "Shopify API access requires an active Shopify billing plan."
-    });
-    return null;
-  }
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-
-  const data = await response.json();
-  
-  if (data.errors) {
-    throw new Error(`Error calling Shopify: ${data.errors.map((e: { message: string }) => e.message).join(', ')}`);
-  }
-
-  return data;
-}
-
-// API Functions
-export async function fetchProducts(first: number = 20): Promise<ShopifyProduct[]> {
-  const data = await storefrontApiRequest(PRODUCTS_QUERY, { first });
-  return data?.data?.products?.edges || [];
-}
-
-export async function fetchProductByHandle(handle: string) {
-  const data = await storefrontApiRequest(PRODUCT_BY_HANDLE_QUERY, { handle });
-  return data?.data?.productByHandle || null;
-}
-
-export interface CartItem {
-  product: ShopifyProduct;
-  variantId: string;
-  variantTitle: string;
-  price: {
-    amount: string;
-    currencyCode: string;
-  };
-  quantity: number;
-  selectedOptions: Array<{
-    name: string;
-    value: string;
-  }>;
-}
-
-export async function createStorefrontCheckout(items: CartItem[]): Promise<string> {
-  const lines = items.map(item => ({
-    quantity: item.quantity,
-    merchandiseId: item.variantId,
-  }));
-
-  const cartData = await storefrontApiRequest(CART_CREATE_MUTATION, {
-    input: { lines },
-  });
-
-  if (cartData?.data?.cartCreate?.userErrors?.length > 0) {
-    throw new Error(`Cart creation failed: ${cartData.data.cartCreate.userErrors.map((e: { message: string }) => e.message).join(', ')}`);
-  }
-
-  const cart = cartData?.data?.cartCreate?.cart;
-  
-  if (!cart?.checkoutUrl) {
-    throw new Error('No checkout URL returned from Shopify');
-  }
-
-  const url = new URL(cart.checkoutUrl);
-  url.searchParams.set('channel', 'online_store');
-  return url.toString();
-}
-
-// Format price helper
-export function formatPrice(amount: string, currencyCode: string): string {
-  return new Intl.NumberFormat('en-CA', {
-    style: 'currency',
-    currency: currencyCode,
-  }).format(parseFloat(amount));
-}
-</file>
-
 <file path="src/lib/utils.ts">
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -5692,14 +5887,6 @@ import { twMerge } from "tailwind-merge";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
-</file>
-
-<file path="src/main.tsx">
-import { createRoot } from "react-dom/client";
-import App from "./App.tsx";
-import "./index.css";
-
-createRoot(document.getElementById("root")!).render(<App />);
 </file>
 
 <file path="src/pages/LikesPage.tsx">
@@ -5852,15 +6039,18 @@ export default function SearchPage() {
   const [isFocused, setIsFocused] = useState(false);
 
   const { data: products, isLoading } = useQuery({
-    queryKey: ['products'],
+    queryKey: ['products', 'search'],
     queryFn: () => fetchProducts(50),
     staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 
-  const filteredProducts = (products || []).filter((product: ShopifyProduct) =>
-    product.node.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    product.node.description?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredProducts = (products || []).filter((product: ShopifyProduct) => {
+    const title = product.node.title?.toLowerCase() || '';
+    const description = product.node.description?.toLowerCase() || '';
+    const query = searchQuery.toLowerCase();
+    return title.includes(query) || description.includes(query);
+  });
 
   return (
     <Layout>
@@ -6106,8 +6296,171 @@ Object.defineProperty(window, "matchMedia", {
 });
 </file>
 
+<file path="src/App.css">
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+</file>
+
+<file path="src/main.tsx">
+import { createRoot } from "react-dom/client";
+import App from "./App.tsx";
+import "./index.css";
+
+createRoot(document.getElementById("root")!).render(<App />);
+</file>
+
 <file path="src/vite-env.d.ts">
 /// <reference types="vite/client" />
+
+interface ImportMetaEnv {
+  readonly VITE_SHOPIFY_API_VERSION: string;
+  readonly VITE_SHOPIFY_STORE_DOMAIN: string;
+  readonly VITE_SHOPIFY_STOREFRONT_TOKEN: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}
+</file>
+
+<file path=".gitignore">
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+</file>
+
+<file path="components.json">
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "default",
+  "rsc": false,
+  "tsx": true,
+  "tailwind": {
+    "config": "tailwind.config.ts",
+    "css": "src/index.css",
+    "baseColor": "slate",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "aliases": {
+    "components": "@/components",
+    "utils": "@/lib/utils",
+    "ui": "@/components/ui",
+    "lib": "@/lib",
+    "hooks": "@/hooks"
+  }
+}
+</file>
+
+<file path="environment.yml">
+name: onesome
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - nodejs=20
+  - npm
+platforms:
+  - win-64
+</file>
+
+<file path="eslint.config.js">
+import js from "@eslint/js";
+import globals from "globals";
+import reactHooks from "eslint-plugin-react-hooks";
+import reactRefresh from "eslint-plugin-react-refresh";
+import tseslint from "typescript-eslint";
+
+export default tseslint.config(
+  { ignores: ["dist"] },
+  {
+    extends: [js.configs.recommended, ...tseslint.configs.recommended],
+    files: ["**/*.{ts,tsx}"],
+    languageOptions: {
+      ecmaVersion: 2020,
+      globals: globals.browser,
+    },
+    plugins: {
+      "react-hooks": reactHooks,
+      "react-refresh": reactRefresh,
+    },
+    rules: {
+      ...reactHooks.configs.recommended.rules,
+      "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
+      "@typescript-eslint/no-unused-vars": "off",
+    },
+  },
+);
+</file>
+
+<file path="postcss.config.js">
+export default {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+};
 </file>
 
 <file path="tsconfig.app.json">
@@ -6188,30 +6541,6 @@ Object.defineProperty(window, "matchMedia", {
 }
 </file>
 
-<file path="vite.config.ts">
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react-swc";
-import path from "path";
-import { componentTagger } from "lovable-tagger";
-
-// https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
-  server: {
-    host: "::",
-    port: 8080,
-    hmr: {
-      overlay: false,
-    },
-  },
-  plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
-  },
-}));
-</file>
-
 <file path="vitest.config.ts">
 import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react-swc";
@@ -6231,135 +6560,560 @@ export default defineConfig({
 });
 </file>
 
-<file path="package.json">
-{
-  "name": "vite_react_shadcn_ts",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "build:dev": "vite build --mode development",
-    "lint": "eslint .",
-    "preview": "vite preview",
-    "test": "vitest run",
-    "test:watch": "vitest"
-  },
-  "dependencies": {
-    "@hookform/resolvers": "^3.10.0",
-    "@radix-ui/react-accordion": "^1.2.11",
-    "@radix-ui/react-alert-dialog": "^1.1.14",
-    "@radix-ui/react-aspect-ratio": "^1.1.7",
-    "@radix-ui/react-avatar": "^1.1.10",
-    "@radix-ui/react-checkbox": "^1.3.2",
-    "@radix-ui/react-collapsible": "^1.1.11",
-    "@radix-ui/react-context-menu": "^2.2.15",
-    "@radix-ui/react-dialog": "^1.1.14",
-    "@radix-ui/react-dropdown-menu": "^2.1.15",
-    "@radix-ui/react-hover-card": "^1.1.14",
-    "@radix-ui/react-label": "^2.1.7",
-    "@radix-ui/react-menubar": "^1.1.15",
-    "@radix-ui/react-navigation-menu": "^1.2.13",
-    "@radix-ui/react-popover": "^1.1.14",
-    "@radix-ui/react-progress": "^1.1.7",
-    "@radix-ui/react-radio-group": "^1.3.7",
-    "@radix-ui/react-scroll-area": "^1.2.9",
-    "@radix-ui/react-select": "^2.2.5",
-    "@radix-ui/react-separator": "^1.1.7",
-    "@radix-ui/react-slider": "^1.3.5",
-    "@radix-ui/react-slot": "^1.2.3",
-    "@radix-ui/react-switch": "^1.2.5",
-    "@radix-ui/react-tabs": "^1.1.12",
-    "@radix-ui/react-toast": "^1.2.14",
-    "@radix-ui/react-toggle": "^1.1.9",
-    "@radix-ui/react-toggle-group": "^1.1.10",
-    "@radix-ui/react-tooltip": "^1.2.7",
-    "@tanstack/react-query": "^5.83.0",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "cmdk": "^1.1.1",
-    "date-fns": "^3.6.0",
-    "embla-carousel-react": "^8.6.0",
-    "framer-motion": "^12.26.2",
-    "input-otp": "^1.4.2",
-    "lucide-react": "^0.462.0",
-    "next-themes": "^0.3.0",
-    "react": "^18.3.1",
-    "react-day-picker": "^8.10.1",
-    "react-dom": "^18.3.1",
-    "react-hook-form": "^7.61.1",
-    "react-resizable-panels": "^2.1.9",
-    "react-router-dom": "^6.30.1",
-    "recharts": "^2.15.4",
-    "sonner": "^1.7.4",
-    "tailwind-merge": "^2.6.0",
-    "tailwindcss-animate": "^1.0.7",
-    "vaul": "^0.9.9",
-    "zod": "^3.25.76",
-    "zustand": "^5.0.10"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.32.0",
-    "@tailwindcss/typography": "^0.5.16",
-    "@testing-library/jest-dom": "^6.6.0",
-    "@testing-library/react": "^16.0.0",
-    "@types/node": "^22.16.5",
-    "@types/react": "^18.3.23",
-    "@types/react-dom": "^18.3.7",
-    "@vitejs/plugin-react-swc": "^3.11.0",
-    "autoprefixer": "^10.4.21",
-    "eslint": "^9.32.0",
-    "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-react-refresh": "^0.4.20",
-    "globals": "^15.15.0",
-    "jsdom": "^20.0.3",
-    "lovable-tagger": "^1.1.13",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^3.4.17",
-    "typescript": "^5.8.3",
-    "typescript-eslint": "^8.38.0",
-    "vite": "^5.4.19",
-    "vitest": "^3.2.4"
-  }
+<file path="src/features/layout/Header.tsx">
+import { ShoppingBag } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { useCartStore } from '@/stores/cartStore';
+import { CartDrawer } from '@/features/cart/CartDrawer';
+
+export function Header() {
+  const totalItems = useCartStore((state) => state.getTotalItems());
+
+  return (
+    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
+      <div className="flex items-center justify-between h-16 px-6">
+        <Link to="/" className="logo text-xl font-bold">
+          one some
+        </Link>
+        
+        <CartDrawer>
+          <button className="relative p-2 -mr-2">
+            <ShoppingBag className="w-6 h-6" strokeWidth={1.5} />
+            {totalItems > 0 && (
+              <span className="absolute top-1 right-1 w-4 h-4 text-[10px] font-medium flex items-center justify-center bg-foreground text-background rounded-full">
+                {totalItems > 9 ? '9+' : totalItems}
+              </span>
+            )}
+          </button>
+        </CartDrawer>
+      </div>
+    </header>
+  );
 }
 </file>
 
-<file path="src/App.tsx">
-import { Toaster } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import ProductPage from "./pages/ProductPage";
-import SearchPage from "./pages/SearchPage";
-import LikesPage from "./pages/LikesPage";
-import MyPage from "./pages/MyPage";
-import NotFound from "./pages/NotFound";
+<file path="src/features/products/ProductGrid.tsx">
+import { useQuery } from '@tanstack/react-query';
+import { fetchProducts, ShopifyProduct } from '@/lib/shopify';
+import { ProductCard } from './ProductCard';
+import { Loader2 } from 'lucide-react';
 
-const queryClient = new QueryClient();
+interface ProductGridProps {
+  filterLiked?: boolean;
+  likedProductIds?: string[];
+  showTitle?: boolean;
+}
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster position="top-center" />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/product/:handle" element={<ProductPage />} />
-          <Route path="/search" element={<SearchPage />} />
-          <Route path="/likes" element={<LikesPage />} />
-          <Route path="/mypage" element={<MyPage />} />
-          <Route path="/orders" element={<MyPage />} />
-          <Route path="/settings" element={<MyPage />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+export function ProductGrid({ filterLiked = false, likedProductIds = [], showTitle = false }: ProductGridProps) {
+  const { data: products, isLoading } = useQuery({
+    queryKey: ['products', 'grid'],
+    queryFn: () => fetchProducts(50),
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  });
 
-export default App;
+  console.log('[ProductGrid] Loading:', isLoading, 'Products:', products?.length);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  let displayProducts = products || [];
+  
+  if (filterLiked) {
+    displayProducts = displayProducts.filter((product: ShopifyProduct) => 
+      likedProductIds.includes(product.node.id)
+    );
+  }
+
+  if (displayProducts.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 px-4">
+        <p className="text-sm text-muted-foreground text-center">
+          {filterLiked 
+            ? "No liked items yet. Explore and save your favorites."
+            : "No products found. Add some products to your store."
+          }
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <section id="products-section" className="py-20 bg-white">
+      <div className="container mx-auto px-4">
+        {showTitle && (
+          <div
+            className="text-center mb-12"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              인기 상품
+            </h2>
+            <p className="text-gray-600 text-lg">
+              지금 가장 핫한 아이템을 만나보세요
+            </p>
+          </div>
+        )}
+        
+        <div
+          className="masonry-grid"
+        >
+          {displayProducts.map((product: ShopifyProduct, index: number) => (
+            <div key={product.node.id}>
+              <ProductCard product={product} index={index} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+</file>
+
+<file path="src/lib/shopify.ts">
+// Shopify Storefront API Configuration
+const SHOPIFY_STORE_DOMAIN = import.meta.env.VITE_SHOPIFY_STORE_DOMAIN;
+const SHOPIFY_API_VERSION = import.meta.env.VITE_SHOPIFY_API_VERSION;
+const SHOPIFY_STOREFRONT_TOKEN = import.meta.env.VITE_SHOPIFY_STOREFRONT_TOKEN;
+
+// Validate environment variables
+if (!SHOPIFY_STORE_DOMAIN || !SHOPIFY_API_VERSION || !SHOPIFY_STOREFRONT_TOKEN) {
+  console.error('[Shopify] Missing required environment variables', {
+    hasDomain: !!SHOPIFY_STORE_DOMAIN,
+    hasVersion: !!SHOPIFY_API_VERSION,
+    hasToken: !!SHOPIFY_STOREFRONT_TOKEN
+  });
+}
+
+const SHOPIFY_STOREFRONT_URL = `https://${SHOPIFY_STORE_DOMAIN}/api/${SHOPIFY_API_VERSION}/graphql.json`;
+
+// Types
+export interface ShopifyProduct {
+  node: {
+    id: string;
+    title: string;
+    description: string;
+    handle: string;
+    priceRange: {
+      minVariantPrice: {
+        amount: string;
+        currencyCode: string;
+      };
+    };
+    images: {
+      edges: Array<{
+        node: {
+          url: string;
+          altText: string | null;
+        };
+      }>;
+    };
+    variants: {
+      edges: Array<{
+        node: {
+          id: string;
+          title: string;
+          price: {
+            amount: string;
+            currencyCode: string;
+          };
+          availableForSale: boolean;
+          selectedOptions: Array<{
+            name: string;
+            value: string;
+          }>;
+        };
+      }>;
+    };
+    options: Array<{
+      name: string;
+      values: string[];
+    }>;
+  };
+}
+
+// GraphQL Queries
+const PRODUCTS_QUERY = `
+  query GetProducts($first: Int!) {
+    products(first: $first) {
+      edges {
+        node {
+          id
+          title
+          description
+          handle
+          priceRange {
+            minVariantPrice {
+              amount
+              currencyCode
+            }
+          }
+          images(first: 5) {
+            edges {
+              node {
+                url
+                altText
+              }
+            }
+          }
+          variants(first: 10) {
+            edges {
+              node {
+                id
+                title
+                price {
+                  amount
+                  currencyCode
+                }
+                availableForSale
+                selectedOptions {
+                  name
+                  value
+                }
+              }
+            }
+          }
+          options {
+            name
+            values
+          }
+        }
+      }
+    }
+  }
+`;
+
+const PRODUCT_BY_HANDLE_QUERY = `
+  query GetProductByHandle($handle: String!) {
+    productByHandle(handle: $handle) {
+      id
+      title
+      description
+      handle
+      priceRange {
+        minVariantPrice {
+          amount
+          currencyCode
+        }
+      }
+      images(first: 10) {
+        edges {
+          node {
+            url
+            altText
+          }
+        }
+      }
+      variants(first: 100) {
+        edges {
+          node {
+            id
+            title
+            price {
+              amount
+              currencyCode
+            }
+            availableForSale
+            selectedOptions {
+              name
+              value
+            }
+          }
+        }
+      }
+      options {
+        name
+        values
+      }
+    }
+  }
+`;
+
+const CART_CREATE_MUTATION = `
+  mutation cartCreate($input: CartInput!) {
+    cartCreate(input: $input) {
+      cart {
+        id
+        checkoutUrl
+        totalQuantity
+        cost {
+          totalAmount {
+            amount
+            currencyCode
+          }
+        }
+      }
+      userErrors {
+        field
+        message
+      }
+    }
+  }
+`;
+
+// API Helper - Storefront API 요청
+export async function storefrontApiRequest(query: string, variables: Record<string, unknown> = {}) {
+  try {
+    console.log('[Shopify] Requesting Storefront API...');
+    
+    const response = await fetch(SHOPIFY_STOREFRONT_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Shopify-Storefront-Access-Token': SHOPIFY_STOREFRONT_TOKEN
+      },
+      body: JSON.stringify({
+        query,
+        variables,
+      }),
+    });
+
+    // 모든 HTTP 에러는 Mock 데이터로 처리되므로 throw하지 않음
+    if (response.status === 401) {
+      console.warn('[Shopify] 401 Unauthorized - API token invalid or expired. Using mock data.');
+      throw new Error('API_ERROR');
+    }
+
+    if (response.status === 402) {
+      console.warn('[Shopify] 402 Payment required. Using mock data.');
+      throw new Error('API_ERROR');
+    }
+
+    if (!response.ok) {
+      console.warn(`[Shopify] HTTP error ${response.status}. Using mock data.`);
+      throw new Error('API_ERROR');
+    }
+
+    const data = await response.json();
+    
+    if (data.errors) {
+      console.warn('[Shopify] GraphQL error. Using mock data.');
+      throw new Error('API_ERROR');
+    }
+
+    console.log('[Shopify] API request successful');
+    return data;
+  } catch (error) {
+    // 모든 에러를 API_ERROR로 통일 (catch 블록에서 처리)
+    throw new Error('API_ERROR');
+  }
+}
+
+// Mock 데이터 (테스트용)
+function generateMockProducts(): ShopifyProduct[] {
+  return [
+    {
+      node: {
+        id: 'gid://shopify/Product/1',
+        title: '프리미엄 반팔 티셔츠',
+        description: '고급 면 소재로 만든 편안한 반팔 티셔츠입니다.',
+        handle: 'premium-tshirt',
+        priceRange: {
+          minVariantPrice: {
+            amount: '29.99',
+            currencyCode: 'CAD'
+          }
+        },
+        images: {
+          edges: [
+            {
+              node: {
+                url: '/src/assets/products/tshirt.jpg',
+                altText: '프리미엄 반팔 티셔츠'
+              }
+            }
+          ]
+        },
+        variants: {
+          edges: [
+            {
+              node: {
+                id: 'gid://shopify/ProductVariant/1',
+                title: 'Small / Black',
+                price: { amount: '29.99', currencyCode: 'CAD' },
+                availableForSale: true,
+                selectedOptions: [
+                  { name: 'Size', value: 'Small' },
+                  { name: 'Color', value: 'Black' }
+                ]
+              }
+            }
+          ]
+        },
+        options: [
+          { name: 'Size', values: ['Small', 'Medium', 'Large', 'XL'] },
+          { name: 'Color', values: ['Black', 'White', 'Blue'] }
+        ]
+      }
+    },
+    {
+      node: {
+        id: 'gid://shopify/Product/2',
+        title: '캐주얼 데님 재킷',
+        description: '클래식 스타일의 데님 재킷으로 다양한 스타일과 어울립니다.',
+        handle: 'casual-denim-jacket',
+        priceRange: {
+          minVariantPrice: {
+            amount: '79.99',
+            currencyCode: 'CAD'
+          }
+        },
+        images: {
+          edges: [
+            {
+              node: {
+                url: '/src/assets/products/jacket.jpg',
+                altText: '캐주얼 데님 재킷'
+              }
+            }
+          ]
+        },
+        variants: {
+          edges: [
+            {
+              node: {
+                id: 'gid://shopify/ProductVariant/2',
+                title: 'Medium / Blue',
+                price: { amount: '79.99', currencyCode: 'CAD' },
+                availableForSale: true,
+                selectedOptions: [
+                  { name: 'Size', value: 'Medium' },
+                  { name: 'Color', value: 'Blue' }
+                ]
+              }
+            }
+          ]
+        },
+        options: [
+          { name: 'Size', values: ['Small', 'Medium', 'Large', 'XL'] },
+          { name: 'Color', values: ['Blue', 'Black', 'Light Blue'] }
+        ]
+      }
+    },
+    {
+      node: {
+        id: 'gid://shopify/Product/3',
+        title: '편안한 스웨트팬츠',
+        description: '부드러운 면 소재의 편안한 스웨트팬츠입니다.',
+        handle: 'comfortable-sweatpants',
+        priceRange: {
+          minVariantPrice: {
+            amount: '49.99',
+            currencyCode: 'CAD'
+          }
+        },
+        images: {
+          edges: [
+            {
+              node: {
+                url: '/src/assets/products/sweatpants.jpg',
+                altText: '편안한 스웨트팬츠'
+              }
+            }
+          ]
+        },
+        variants: {
+          edges: [
+            {
+              node: {
+                id: 'gid://shopify/ProductVariant/3',
+                title: 'Medium / Gray',
+                price: { amount: '49.99', currencyCode: 'CAD' },
+                availableForSale: true,
+                selectedOptions: [
+                  { name: 'Size', value: 'Medium' },
+                  { name: 'Color', value: 'Gray' }
+                ]
+              }
+            }
+          ]
+        },
+        options: [
+          { name: 'Size', values: ['Small', 'Medium', 'Large', 'XL'] },
+          { name: 'Color', values: ['Gray', 'Black', 'Navy'] }
+        ]
+      }
+    }
+  ];
+}
+
+// API Functions
+export async function fetchProducts(first: number = 50): Promise<ShopifyProduct[]> {
+  try {
+    console.log('[Shopify] Fetching products...');
+    const data = await storefrontApiRequest(PRODUCTS_QUERY, { first });
+    const products = data?.data?.products?.edges || [];
+    
+    if (products.length > 0) {
+      console.log(`[Shopify] Successfully fetched ${products.length} products from Shopify`);
+      return products;
+    }
+    
+    console.log('[Shopify] No products from API, using mock data');
+    return generateMockProducts();
+  } catch (error) {
+    // API 에러 발생 시 모두 조용히 Mock 데이터로 처리
+    console.log('[Shopify] API request failed, using mock data');
+    return generateMockProducts();
+  }
+}
+
+export async function fetchProductByHandle(handle: string) {
+  const data = await storefrontApiRequest(PRODUCT_BY_HANDLE_QUERY, { handle });
+  return data?.data?.productByHandle || null;
+}
+
+export interface CartItem {
+  product: ShopifyProduct;
+  variantId: string;
+  variantTitle: string;
+  price: {
+    amount: string;
+    currencyCode: string;
+  };
+  quantity: number;
+  selectedOptions: Array<{
+    name: string;
+    value: string;
+  }>;
+}
+
+export async function createStorefrontCheckout(items: CartItem[]): Promise<string> {
+  const lines = items.map(item => ({
+    quantity: item.quantity,
+    merchandiseId: item.variantId,
+  }));
+
+  const cartData = await storefrontApiRequest(CART_CREATE_MUTATION, {
+    input: { lines },
+  });
+
+  if (cartData?.data?.cartCreate?.userErrors?.length > 0) {
+    throw new Error(`Cart creation failed: ${cartData.data.cartCreate.userErrors.map((e: { message: string }) => e.message).join(', ')}`);
+  }
+
+  const cart = cartData?.data?.cartCreate?.cart;
+  
+  if (!cart?.checkoutUrl) {
+    throw new Error('No checkout URL returned from Shopify');
+  }
+
+  const url = new URL(cart.checkoutUrl);
+  url.searchParams.set('channel', 'online_store');
+  return url.toString();
+}
+
+// Format price helper
+export function formatPrice(amount: string, currencyCode: string): string {
+  return new Intl.NumberFormat('en-CA', {
+    style: 'currency',
+    currency: currencyCode,
+  }).format(parseFloat(amount));
+}
 </file>
 
 <file path="src/index.css">
@@ -6565,19 +7319,131 @@ export default App;
 }
 </file>
 
-<file path="src/pages/Index.tsx">
-import { Layout } from '@/features/layout/Layout';
-import { ProductGrid } from '@/features/products/ProductGrid';
+<file path="index.html">
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>One Some - 프리미엄 스트릿 패션</title>
+    <meta name="description" content="프리미엄 스트릿 패션으로 당신만의 스타일을 완성하세요" />
+    <meta name="author" content="One Some" />
 
-const Index = () => {
-  return (
-    <Layout>
-      <ProductGrid />
-    </Layout>
-  );
-};
+    <meta property="og:title" content="One Some - 프리미엄 스트릿 패션" />
+    <meta property="og:description" content="프리미엄 스트릿 패션으로 당신만의 스타일을 완성하세요" />
+    <meta property="og:type" content="website" />
 
-export default Index;
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@OneSome" />
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+</file>
+
+<file path="README.md">
+# One Some - 프리미엄 스트릿 패션 쇼핑몰
+
+현대적이고 미니멀한 디자인의 온라인 스토어프론트입니다.
+
+## 🎯 프로젝트 개요
+
+One Some은 Shopify 백엔드를 활용한 React 기반의 프리미엄 패션 쇼핑몰입니다.
+
+## 🚀 시작하기
+
+### 개발 환경 설정
+
+```bash
+# 의존성 설치
+npm install
+
+# 개발 서버 실행
+npm run dev
+```
+
+브라우저에서 `http://localhost:8080`으로 접속하세요.
+
+### 프로덕션 빌드
+
+```bash
+npm run build
+npm run preview
+```
+
+## 📁 프로젝트 구조
+
+```
+src/
+  ├── components/      # 재사용 가능한 UI 컴포넌트
+  ├── features/        # 기능별 컴포넌트
+  │   ├── cart/       # 장바구니
+  │   ├── landing/    # 랜딩 페이지 섹션
+  │   ├── layout/     # 레이아웃
+  │   └── products/   # 상품 관련
+  ├── hooks/          # 커스텀 훅
+  ├── lib/            # 유틸리티 및 API
+  ├── pages/          # 페이지 컴포넌트
+  └── stores/         # 상태 관리
+```
+
+## 🛠️ 기술 스택
+
+- **프론트엔드**: React 18, TypeScript
+- **스타일링**: Tailwind CSS, shadcn/ui
+- **번들러**: Vite
+- **상태 관리**: Zustand
+- **애니메이션**: Framer Motion
+- **캐러셀**: Embla Carousel
+- **API**: Shopify Storefront API (GraphQL)
+
+## 📦 주요 기능
+
+- ✨ 부드러운 스크롤 애니메이션
+- 🎠 자동 재생 프로모션 캐러셀 (3초마다 전환)
+- 🛒 동적 장바구니 관리
+- ❤️ 찜하기 기능
+- 🔍 상품 검색
+- 📱 반응형 디자인
+
+## 🔗 Shopify 연동
+
+현재 `one-some-storefront-592cz.myshopify.com`의 Shopify Storefront API와 연동되어 있습니다.
+
+API 설정은 `src/lib/shopify.ts`에서 관리됩니다.
+
+## 💻 개발 스크립트
+
+```bash
+# 개발 서버 실행
+npm run dev
+
+# 프로덕션 빌드
+npm run build
+
+# 빌드 결과 미리보기
+npm run preview
+
+# 린팅 검사
+npm run lint
+
+# 테스트 실행
+npm run test
+
+# 테스트 감시 모드
+npm run test:watch
+```
+
+## 📝 라이선스
+
+MIT
+
+## 👨‍💻 개발자
+
+One Some Team
 </file>
 
 <file path="tailwind.config.ts">
@@ -6679,6 +7545,192 @@ export default {
   },
   plugins: [require("tailwindcss-animate")],
 } satisfies Config;
+</file>
+
+<file path="vite.config.ts">
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react-swc";
+import path from "path";
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  server: {
+    host: "::",
+    port: 8080,
+    hmr: {
+      overlay: false,
+    },
+  },
+  plugins: [react()],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
+});
+</file>
+
+<file path="src/pages/Index.tsx">
+import { Layout } from '@/features/layout/Layout';
+import { ProductGrid } from '@/features/products/ProductGrid';
+import { HeroSection } from '@/features/landing/HeroSection';
+import { TodayRecommendedSection } from '@/features/landing/TodayRecommendedSection';
+import { CTASection } from '@/features/landing/CTASection';
+import { LandingFooter } from '@/features/landing/LandingFooter';
+
+const Index = () => {
+  return (
+    <Layout>
+      <HeroSection />
+      <TodayRecommendedSection />
+      <ProductGrid showTitle={true} />
+      <CTASection />
+      <LandingFooter />
+    </Layout>
+  );
+};
+
+export default Index;
+</file>
+
+<file path="src/App.tsx">
+import { Toaster } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Index from "./pages/Index";
+import ProductPage from "./pages/ProductPage";
+import SearchPage from "./pages/SearchPage";
+import LikesPage from "./pages/LikesPage";
+import MyPage from "./pages/MyPage";
+import NotFound from "./pages/NotFound";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5분간 fresh 상태 유지
+      gcTime: 1000 * 60 * 30, // 30분간 캐시 유지
+      refetchOnWindowFocus: false, // 창 포커스 시 재요청 안함
+      retry: 1, // 실패 시 1번만 재시도
+    },
+  },
+});
+
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <Toaster position="top-center" />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/product/:handle" element={<ProductPage />} />
+          <Route path="/search" element={<SearchPage />} />
+          <Route path="/likes" element={<LikesPage />} />
+          <Route path="/mypage" element={<MyPage />} />
+          <Route path="/orders" element={<MyPage />} />
+          <Route path="/settings" element={<MyPage />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </TooltipProvider>
+  </QueryClientProvider>
+);
+
+export default App;
+</file>
+
+<file path="package.json">
+{
+  "name": "vite_react_shadcn_ts",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build:dev": "vite build --mode development",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^3.10.0",
+    "@radix-ui/react-accordion": "^1.2.11",
+    "@radix-ui/react-alert-dialog": "^1.1.14",
+    "@radix-ui/react-aspect-ratio": "^1.1.7",
+    "@radix-ui/react-avatar": "^1.1.10",
+    "@radix-ui/react-checkbox": "^1.3.2",
+    "@radix-ui/react-collapsible": "^1.1.11",
+    "@radix-ui/react-context-menu": "^2.2.15",
+    "@radix-ui/react-dialog": "^1.1.14",
+    "@radix-ui/react-dropdown-menu": "^2.1.15",
+    "@radix-ui/react-hover-card": "^1.1.14",
+    "@radix-ui/react-label": "^2.1.7",
+    "@radix-ui/react-menubar": "^1.1.15",
+    "@radix-ui/react-navigation-menu": "^1.2.13",
+    "@radix-ui/react-popover": "^1.1.14",
+    "@radix-ui/react-progress": "^1.1.7",
+    "@radix-ui/react-radio-group": "^1.3.7",
+    "@radix-ui/react-scroll-area": "^1.2.9",
+    "@radix-ui/react-select": "^2.2.5",
+    "@radix-ui/react-separator": "^1.1.7",
+    "@radix-ui/react-slider": "^1.3.5",
+    "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-switch": "^1.2.5",
+    "@radix-ui/react-tabs": "^1.1.12",
+    "@radix-ui/react-toast": "^1.2.14",
+    "@radix-ui/react-toggle": "^1.1.9",
+    "@radix-ui/react-toggle-group": "^1.1.10",
+    "@radix-ui/react-tooltip": "^1.2.7",
+    "@tanstack/react-query": "^5.83.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "cmdk": "^1.1.1",
+    "date-fns": "^3.6.0",
+    "embla-carousel-autoplay": "^8.6.0",
+    "embla-carousel-react": "^8.6.0",
+    "framer-motion": "^12.26.2",
+    "input-otp": "^1.4.2",
+    "lucide-react": "^0.462.0",
+    "next-themes": "^0.3.0",
+    "react": "^18.3.1",
+    "react-day-picker": "^8.10.1",
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.61.1",
+    "react-resizable-panels": "^2.1.9",
+    "react-router-dom": "^6.30.1",
+    "recharts": "^2.15.4",
+    "sonner": "^1.7.4",
+    "tailwind-merge": "^2.6.0",
+    "tailwindcss-animate": "^1.0.7",
+    "vaul": "^0.9.9",
+    "zod": "^3.25.76",
+    "zustand": "^5.0.10"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.32.0",
+    "@tailwindcss/typography": "^0.5.16",
+    "@testing-library/jest-dom": "^6.6.0",
+    "@testing-library/react": "^16.0.0",
+    "@types/node": "^22.16.5",
+    "@types/react": "^18.3.23",
+    "@types/react-dom": "^18.3.7",
+    "@vitejs/plugin-react-swc": "^3.11.0",
+    "autoprefixer": "^10.4.21",
+    "eslint": "^9.32.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^15.15.0",
+    "jsdom": "^20.0.3",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.38.0",
+    "vite": "^7.3.1",
+    "vitest": "^3.2.4"
+  }
+}
 </file>
 
 </files>

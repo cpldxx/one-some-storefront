@@ -3,8 +3,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
+import Community from "./pages/Community";
+import ShopPage from "./pages/ShopPage";
 import ProductPage from "./pages/ProductPage";
-import SearchPage from "./pages/SearchPage";
 import LikesPage from "./pages/LikesPage";
 import MyPage from "./pages/MyPage";
 import NotFound from "./pages/NotFound";
@@ -27,8 +28,9 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/community" element={<Community />} />
+          <Route path="/shop" element={<ShopPage />} />
           <Route path="/product/:handle" element={<ProductPage />} />
-          <Route path="/search" element={<SearchPage />} />
           <Route path="/likes" element={<LikesPage />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/orders" element={<MyPage />} />
