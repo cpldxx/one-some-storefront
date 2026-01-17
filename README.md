@@ -1,73 +1,99 @@
-# Welcome to your Lovable project
+# One Some - 프리미엄 스트릿 패션 쇼핑몰
 
-## Project info
+현대적이고 미니멀한 디자인의 온라인 스토어프론트입니다.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## 🎯 프로젝트 개요
 
-## How can I edit this code?
+One Some은 Shopify 백엔드를 활용한 React 기반의 프리미엄 패션 쇼핑몰입니다.
 
-There are several ways of editing your application.
+## 🚀 시작하기
 
-**Use Lovable**
+### 개발 환경 설정
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+```bash
+# 의존성 설치
+npm install
 
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# 개발 서버 실행
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+브라우저에서 `http://localhost:8080`으로 접속하세요.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### 프로덕션 빌드
 
-**Use GitHub Codespaces**
+```bash
+npm run build
+npm run preview
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 📁 프로젝트 구조
 
-## What technologies are used for this project?
+```
+src/
+  ├── components/      # 재사용 가능한 UI 컴포넌트
+  ├── features/        # 기능별 컴포넌트
+  │   ├── cart/       # 장바구니
+  │   ├── landing/    # 랜딩 페이지 섹션
+  │   ├── layout/     # 레이아웃
+  │   └── products/   # 상품 관련
+  ├── hooks/          # 커스텀 훅
+  ├── lib/            # 유틸리티 및 API
+  ├── pages/          # 페이지 컴포넌트
+  └── stores/         # 상태 관리
+```
 
-This project is built with:
+## 🛠️ 기술 스택
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- **프론트엔드**: React 18, TypeScript
+- **스타일링**: Tailwind CSS, shadcn/ui
+- **번들러**: Vite
+- **상태 관리**: Zustand
+- **애니메이션**: Framer Motion
+- **캐러셀**: Embla Carousel
+- **API**: Shopify Storefront API (GraphQL)
 
-## How can I deploy this project?
+## 📦 주요 기능
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+- ✨ 부드러운 스크롤 애니메이션
+- 🎠 자동 재생 프로모션 캐러셀 (3초마다 전환)
+- 🛒 동적 장바구니 관리
+- ❤️ 찜하기 기능
+- 🔍 상품 검색
+- 📱 반응형 디자인
 
-## Can I connect a custom domain to my Lovable project?
+## 🔗 Shopify 연동
 
-Yes, you can!
+현재 `one-some-storefront-592cz.myshopify.com`의 Shopify Storefront API와 연동되어 있습니다.
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+API 설정은 `src/lib/shopify.ts`에서 관리됩니다.
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## 💻 개발 스크립트
+
+```bash
+# 개발 서버 실행
+npm run dev
+
+# 프로덕션 빌드
+npm run build
+
+# 빌드 결과 미리보기
+npm run preview
+
+# 린팅 검사
+npm run lint
+
+# 테스트 실행
+npm run test
+
+# 테스트 감시 모드
+npm run test:watch
+```
+
+## 📝 라이선스
+
+MIT
+
+## 👨‍💻 개발자
+
+One Some Team

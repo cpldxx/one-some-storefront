@@ -206,8 +206,17 @@ export async function storefrontApiRequest(query: string, variables: Record<stri
 
 // API Functions
 export async function fetchProducts(first: number = 20): Promise<ShopifyProduct[]> {
-  const data = await storefrontApiRequest(PRODUCTS_QUERY, { first });
-  return data?.data?.products?.edges || [];
+  try {
+    console.log('[Shopify] Fetching products...', { first });
+    const data = await storefrontApiRequest(PRODUCTS_QUERY, { first });
+    const products = data?.data?.products?.edges || [];
+    console.log('[Shopify] Products fetched:', products.length);
+    return products;
+  } catch (error) {
+    console.error('[Shopify] Error fetching products:', error);
+    toast.error('상품을 불러오는데 실패했습니다');
+    return [];
+  }
 }
 
 export async function fetchProductByHandle(handle: string) {

@@ -2,18 +2,24 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchProducts, ShopifyProduct } from '@/lib/shopify';
 import { ProductCard } from './ProductCard';
 import { Loader2 } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { useScrollAnimation, staggerContainer, staggerItem } from '@/hooks/use-scroll-animation';
 
 interface ProductGridProps {
   filterLiked?: boolean;
   likedProductIds?: string[];
+  showTitle?: boolean;
 }
 
-export function ProductGrid({ filterLiked = false, likedProductIds = [] }: ProductGridProps) {
+export function ProductGrid({ filterLiked = false, likedProductIds = [], showTitle = false }: ProductGridProps) {
+  const { ref, isVisible } = useScrollAnimation({ threshold: 0.1 });
   const { data: products, isLoading, error } = useQuery({
     queryKey: ['products'],
     queryFn: () => fetchProducts(50),
     staleTime: 5 * 60 * 1000,
   });
+
+  console.log('[ProductGrid] Loading:', isLoading, 'Products:', products?.length, 'Error:', error);
 
   if (isLoading) {
     return (
@@ -55,10 +61,37 @@ export function ProductGrid({ filterLiked = false, likedProductIds = [] }: Produ
   }
 
   return (
-    <div className="masonry-grid px-3 py-4">
-      {displayProducts.map((product: ShopifyProduct, index: number) => (
-        <ProductCard key={product.node.id} product={product} index={index} />
-      ))}
-    </div>
+    <section id="products-section" ref={ref} className="py-20 bg-gray-50">
+      <div className="container mx-auto px-4">
+        {showTitle && (
+          <motion.div
+            initial="hidden"
+            animate={isVisible ? 'visible' : 'hidden'}
+            variants={staggerItem}
+            className="text-center mb-12"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              인기 상품
+            </h2>
+            <p className="text-gray-600 text-lg">
+              지금 가장 핫한 아이템을 만나보세요
+            </p>
+          </motion.div>
+        )}
+        
+        <motion.div
+          initial="hidden"
+          animate={isVisible ? 'visible' : 'hidden'}
+          variants={staggerContainer}
+          className="masonry-grid"
+        >
+          {displayProducts.map((product: ShopifyProduct, index: number) => (
+            <motion.div key={product.node.id} variants={staggerItem}>
+              <ProductCard product={product} index={index} />
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+    </section>
   );
 }

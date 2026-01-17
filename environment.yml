@@ -1,0 +1,9 @@
+name: onesome
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - nodejs=20
+  - npm
+platforms:
+  - win-64
