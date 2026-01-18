@@ -1,97 +1,212 @@
-// Community/StylePost Data Structure
-export interface StylePost {
-  id: string;
+import { supabase } from './supabase';
+import { Database, PostTags, StylePost, CommentData } from '@/types/database';
+
+/**
+ * Post creation interface
+ */
+export interface CreatePostInput {
   imageUrl: string;
   description: string;
-  user: {
-    id: string;
-    name: string;
-    profileImage: string;
-  };
-  likeCount: number;
-  isLiked: boolean;
-  commentCount: number;
-  tags: {
-    height?: string;
-    weight?: string;
-    season?: string[];
-    style?: string[];
-    brand?: string[];
-    category?: string[];
-  };
-  createdAt: string;
+  tags: PostTags;
 }
 
-// Mock Data Generator
-function generateMockStylePosts(): StylePost[] {
-  const users = [
-    { id: '1', name: '이지은', profileImage: 'https://i.pravatar.cc/150?img=1' },
-    { id: '2', name: '박민지', profileImage: 'https://i.pravatar.cc/150?img=2' },
-    { id: '3', name: '김수진', profileImage: 'https://i.pravatar.cc/150?img=3' },
-    { id: '4', name: '최혜원', profileImage: 'https://i.pravatar.cc/150?img=4' },
-    { id: '5', name: '정세라', profileImage: 'https://i.pravatar.cc/150?img=5' },
-  ];
-
-  const brands = ['ZARA', '무신사', 'H&M', '유니클로', '에이블리', '미스넬리', '휴고보스'];
-  const styles = ['캐주얼', '미니멀', '로맨틱', '트렌디', '클래식', '스트릿'];
-  const categories = ['상의', '하의', '아우터', '원피스', '신발'];
-  const seasons = ['봄', '여름', '가을', '겨울'];
-
-  const posts: StylePost[] = [];
-
-  for (let i = 1; i <= 20; i++) {
-    const randomUser = users[Math.floor(Math.random() * users.length)];
-    posts.push({
-      id: `post-${i}`,
-      imageUrl: `https://picsum.photos/400/500?random=${i}`,
-      description: `오늘의 스타일링 #${randomUser.name} #데일리룩 #OOTD`,
-      user: randomUser,
-      likeCount: Math.floor(Math.random() * 5000) + 100,
-      isLiked: Math.random() > 0.7,
-      commentCount: Math.floor(Math.random() * 300) + 10,
-      tags: {
-        height: `${160 + Math.floor(Math.random() * 10)}cm`,
-        weight: `${45 + Math.floor(Math.random() * 15)}kg`,
-        season: [seasons[Math.floor(Math.random() * seasons.length)]],
-        style: [styles[Math.floor(Math.random() * styles.length)]],
-        brand: [brands[Math.floor(Math.random() * brands.length)]],
-        category: [categories[Math.floor(Math.random() * categories.length)]],
-      },
-      createdAt: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
-    });
-  }
-
-  return posts;
-}
-
-// Fetch Style Posts (Mock)
-export async function fetchStylePosts(limit: number = 50): Promise<StylePost[]> {
-  console.log('[Community] Fetching style posts...');
-  
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 300));
-  
-  const posts = generateMockStylePosts();
-  console.log(`[Community] Fetched ${posts.length} style posts`);
-  
-  return posts.slice(0, limit);
-}
-
-// Filter Style Posts by Tags
-export function filterStylePosts(
-  posts: StylePost[],
-  filters: {
+/**
+ * Fetch style posts with pagination and optional tag filtering
+ * Supports infinite query pattern
+ */
+export async function fetchStylePosts(
+  page: number = 0,
+  limit: number = 20,
+  filters?: {
     season?: string;
     style?: string;
     brand?: string;
     category?: string;
   }
-): StylePost[] {
-  return posts.filter(post => {
-    if (filters.season && !post.tags.season?.includes(filters.season)) return false;
-    if (filters.style && !post.tags.style?.includes(filters.style)) return false;
-    if (filters.brand && !post.tags.brand?.includes(filters.brand)) return false;
-    if (filters.category && !post.tags.category?.includes(filters.category)) return false;
-    return true;
-  });
+): Promise<StylePost[]> {
+  try {
+    const { data, error } = await (supabase
+      .from('posts')
+      .select(
+        `
+        *,
+        profile:user_id(id, email, username, avatar_url, bio),
+        likes(user_id)
+      `
+      )
+      .order('created_at', { ascending: false })
+      .range(page * limit, (page + 1) * limit - 1) as any);
+
+    if (error) {
+      console.error('[Community] Error fetching posts:', error);
+      throw error;
+    }
+
+    // 응답 데이터 변환
+    const posts: StylePost[] = (data || []).map((post: any) => ({
+      ...post,
+      profile: post.profile,
+      is_liked: (post.likes || []).length > 0,
+    }));
+
+    return posts;
+  } catch (error) {
+    console.error('[Community] Failed to fetch posts:', error);
+    throw error;
+  }
+}
+
+/**
+ * Create a new style post
+ */
+export async function createPost(
+  input: CreatePostInput,
+  userId: string
+): Promise<StylePost> {
+  try {
+    const { data, error } = await (supabase
+      .from('posts')
+      .insert({
+        user_id: userId,
+        image_url: input.imageUrl,
+        description: input.description,
+        tags: input.tags,
+        like_count: 0,
+        comment_count: 0,
+      } as any)
+      .select(
+        `
+        *,
+        profile:user_id(id, email, username, avatar_url, bio)
+      `
+      )
+      .single() as any);
+
+    if (error) {
+      console.error('[Community] Error creating post:', error);
+      throw error;
+    }
+
+    return {
+      ...(data || {}),
+      is_liked: false,
+    };
+  } catch (error) {
+    console.error('[Community] Failed to create post:', error);
+    throw error;
+  }
+}
+
+/**
+ * Toggle like on a post (with optimistic update support)
+ */
+export async function toggleLike(
+  postId: string,
+  userId: string,
+  liked: boolean
+): Promise<void> {
+  try {
+    if (liked) {
+      // Unlike: delete the like record
+      const { error } = await (supabase
+        .from('likes')
+        .delete()
+        .eq('post_id', postId)
+        .eq('user_id', userId) as any);
+
+      if (error) throw error;
+
+      // Decrement like count (RPC function will be created in Supabase)
+      try {
+        // @ts-ignore - RPC function defined in Supabase migrations
+        await supabase.rpc('decrement_post_likes', { post_id: postId });
+      } catch (e) {
+        console.warn('RPC decrement_post_likes failed:', e);
+      }
+    } else {
+      // Like: insert a new like record
+      const { error } = await (supabase
+        .from('likes')
+        .insert({ post_id: postId, user_id: userId } as any) as any);
+
+      if (error) throw error;
+
+      // Increment like count (RPC function will be created in Supabase)
+      try {
+        // @ts-ignore - RPC function defined in Supabase migrations
+        await supabase.rpc('increment_post_likes', { post_id: postId });
+      } catch (e) {
+        console.warn('RPC increment_post_likes failed:', e);
+      }
+    }
+  } catch (error) {
+    console.error('[Community] Error toggling like:', error);
+    throw error;
+  }
+}
+
+/**
+ * Fetch comments for a post
+ */
+export async function fetchComments(postId: string): Promise<CommentData[]> {
+  try {
+    const { data, error } = await (supabase
+      .from('comments')
+      .select(
+        `
+        *,
+        profile:user_id(id, email, username, avatar_url, bio)
+      `
+      )
+      .eq('post_id', postId)
+      .order('created_at', { ascending: true }) as any);
+
+    if (error) throw error;
+
+    return data || [];
+  } catch (error) {
+    console.error('[Community] Error fetching comments:', error);
+    throw error;
+  }
+}
+
+/**
+ * Add a comment to a post
+ */
+export async function addComment(
+  postId: string,
+  userId: string,
+  content: string
+): Promise<CommentData> {
+  try {
+    const { data, error } = await (supabase
+      .from('comments')
+      .insert({
+        post_id: postId,
+        user_id: userId,
+        content,
+      } as any)
+      .select(
+        `
+        *,
+        profile:user_id(id, email, username, avatar_url, bio)
+      `
+      )
+      .single() as any);
+
+    if (error) throw error;
+
+    // Increment comment count (RPC function will be created in Supabase)
+    try {
+      // @ts-ignore - RPC function defined in Supabase migrations
+      await supabase.rpc('increment_post_comments', { post_id: postId });
+    } catch (e) {
+      console.warn('RPC increment_post_comments failed:', e);
+    }
+
+    return data;
+  } catch (error) {
+    console.error('[Community] Error adding comment:', error);
+    throw error;
+  }
 }

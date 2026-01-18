@@ -1,5 +1,5 @@
 import { StyleCard } from '@/features/community/StyleCard';
-import { StylePost } from '@/lib/community';
+import { StylePost } from '@/types/database';
 import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 
@@ -11,7 +11,7 @@ export function AIPickSection({ posts }: AIPickSectionProps) {
   const aiPickedPosts = posts.slice(0, 8); // 4x2 grid
 
   return (
-    <section className="py-6 bg-white">
+    <section className="py-8 bg-white">
       <div className="container mx-auto px-4">
         {/* Section Title */}
         <div className="mb-8">
@@ -28,14 +28,14 @@ export function AIPickSection({ posts }: AIPickSectionProps) {
           ))}
         </div>
 
-        {/* More Button */}
+        {/* View More Button */}
         <div className="flex justify-center mt-8">
           <Link
             to="/community"
-            className="inline-flex items-center gap-1 text-gray-900 font-medium hover:text-gray-600 transition-colors group"
+            className="inline-flex items-center gap-2 text-gray-700 hover:text-gray-900 font-light text-sm transition-colors"
           >
             View More
-            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            <ChevronRight className="w-4 h-4" />
           </Link>
         </div>
       </div>

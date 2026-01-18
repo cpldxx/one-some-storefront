@@ -15,11 +15,11 @@ export interface FilterState {
 }
 
 const FILTER_OPTIONS = {
-  gender: ['남성', '여성', '공용'],
-  season: ['봄', '여름', '가을', '겨울'],
-  style: ['캐주얼', '미니멀', '로맨틱', '트렌디', '클래식', '스트릿'],
-  category: ['상의', '하의', '아우터', '원피스', '신발', '악세서리'],
-  brand: ['ZARA', '무신사', 'H&M', '유니클로', '에이블리'],
+  gender: ['Male', 'Female', 'Unisex'],
+  season: ['Spring', 'Summer', 'Fall', 'Winter'],
+  style: ['Casual', 'Minimal', 'Romantic', 'Trendy', 'Classic', 'Street'],
+  category: ['Top', 'Bottom', 'Outer', 'Dress', 'Shoes', 'Accessories'],
+  brand: ['ZARA', 'Musinsa', 'H&M', 'Uniqlo', 'Ably'],
 };
 
 export function FilterBar({ onFilterChange }: FilterBarProps) {
@@ -37,11 +37,11 @@ export function FilterBar({ onFilterChange }: FilterBarProps) {
   };
 
   const filterTags = [
-    { label: '성별', key: 'gender', icon: '👥' },
-    { label: '계절', key: 'season', icon: '🌸' },
-    { label: '스타일', key: 'style', icon: '✨' },
-    { label: '카테고리', key: 'category', icon: '👔' },
-    { label: '브랜드', key: 'brand', icon: '🏷️' },
+    { label: 'Gender', key: 'gender', icon: '👥' },
+    { label: 'Season', key: 'season', icon: '🌸' },
+    { label: 'Style', key: 'style', icon: '✨' },
+    { label: 'Category', key: 'category', icon: '👔' },
+    { label: 'Brand', key: 'brand', icon: '🏷️' },
   ];
 
   return (

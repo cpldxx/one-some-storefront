@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { Layout } from '@/features/layout/Layout';
-import { fetchProducts } from '@/lib/shopify';
+import { fetchProducts, ShopifyProduct } from '@/lib/shopify';
 import { ProductCard } from '@/features/products/ProductCard';
 
 const ShopPage = () => {
@@ -9,7 +9,7 @@ const ShopPage = () => {
     queryFn: () => fetchProducts(),
   });
 
-  // 상품이 없으면 Coming Soon 표시
+  // If no products, show Coming Soon
   if (products.length === 0) {
     return (
       <Layout>
@@ -32,15 +32,13 @@ const ShopPage = () => {
     );
   }
 
-  // 상품이 있으면 그리드 표시
+  // If products exist, show grid
   return (
     <Layout>
-      <div className="py-8">
-        <div className="container mx-auto px-4">
-          <h1 className="text-3xl font-bold text-gray-900 mb-8">Shop</h1>
-          
+      <div className="py-8 px-4">
+        <div className="container mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {products.map((product, index) => (
+            {(products as ShopifyProduct[]).map((product, index) => (
               <ProductCard key={product.node.id} product={product} index={index} />
             ))}
           </div>

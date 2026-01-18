@@ -38,7 +38,7 @@ export const TodayRecommendedSection = () => {
     );
   }
 
-  // 상품이 없으면 섹션을 표시하지 않음
+  // If no products, don't show section
   if (!recommendedProducts || recommendedProducts.length === 0) {
     return null;
   }
@@ -47,15 +47,15 @@ export const TodayRecommendedSection = () => {
     <section className="py-12 bg-white">
       <div className="container mx-auto px-4">
         <div>
-          {/* 섹션 타이틀 */}
+          {/* Section Title */}
           <div className="mb-8">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-              오늘의 추천
+              Today's Picks
             </h2>
-            <p className="text-gray-600">지금 인기있는 상품들을 만나보세요</p>
+            <p className="text-gray-600">Discover trending products right now</p>
           </div>
 
-          {/* 추천 상품 그리드 */}
+          {/* Product Grid */}
           <div
             className="grid grid-cols-2 md:grid-cols-4 gap-4"
           >
@@ -70,7 +70,7 @@ export const TodayRecommendedSection = () => {
                   className="group"
                 >
                   <div className="bg-gray-100 rounded-lg overflow-hidden mb-3 relative aspect-square">
-                    {/* 상품 이미지 */}
+                    {/* Product Image */}
                     {image && (
                       <img
                         src={image.url}
@@ -79,11 +79,11 @@ export const TodayRecommendedSection = () => {
                       />
                     )}
 
-                    {/* 찜하기 버튼 */}
+                    {/* Like Button */}
                     <button
                       onClick={() => handleLike(product.node.id)}
                       className="absolute top-3 right-3 p-2 bg-white/90 rounded-full hover:bg-white transition-all"
-                      aria-label="찜하기"
+                      aria-label="Like"
                     >
                       <Heart
                         className={`w-5 h-5 transition-colors ${
@@ -95,19 +95,19 @@ export const TodayRecommendedSection = () => {
                     </button>
                   </div>
 
-                  {/* 상품 정보 */}
+                  {/* Product Info */}
                   <div>
-                    {/* 브랜드명 */}
-                    <p className="text-xs text-gray-500 mb-1">엘그런</p>
+                    {/* Brand */}
+                    <p className="text-xs text-gray-500 mb-1">Brand</p>
 
-                    {/* 상품명 */}
+                    {/* Product Name */}
                     <h3 className="font-semibold text-sm text-gray-900 line-clamp-2 mb-2">
                       {product.node.title}
                     </h3>
 
-                    {/* 가격 정보 */}
+                    {/* Price Info */}
                     <div className="mb-2">
-                      {/* 할인율 + 현재가 */}
+                      {/* Discount + Current Price */}
                       <div className="flex items-baseline gap-2 mb-1">
                         <span className="text-pink-600 font-bold text-lg">
                           69%

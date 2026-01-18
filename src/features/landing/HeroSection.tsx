@@ -8,46 +8,46 @@ import Autoplay from 'embla-carousel-autoplay';
 
 const heroSlides = [
   {
-    badge: '🔥 2026 신상품 출시',
-    title: '새로운 스타일,',
-    subtitle: '새로운 시작',
-    description: '50,000원 이상 구매 시 무료배송',
+    badge: '🔥 2026 New Collection',
+    title: 'New Style,',
+    subtitle: 'New Beginning',
+    description: 'Free Shipping on Orders Over $50',
     bgGradient: 'from-gray-900 to-gray-800',
     textColor: 'text-white',
     logoText: 'ONE',
   },
   {
-    badge: '⚡ 한정 세일',
-    title: '지금만 특별한',
-    subtitle: '최대 50% 할인',
-    description: '이번 주말까지 한정 특가',
+    badge: '⚡ Limited Sale',
+    title: 'Special Offer',
+    subtitle: 'Up to 50% Off',
+    description: 'Limited time this weekend only',
     bgGradient: 'from-blue-900 to-blue-800',
     textColor: 'text-white',
     logoText: 'SALE',
   },
   {
-    badge: '✨ 신규 회원 혜택',
-    title: '첫 구매 고객을 위한',
-    subtitle: '5,000원 적립금',
-    description: '회원가입 즉시 사용 가능',
+    badge: '✨ New Member Benefits',
+    title: 'Welcome New Shoppers',
+    subtitle: '$5 Welcome Credit',
+    description: 'Available immediately after sign up',
     bgGradient: 'from-purple-900 to-purple-800',
     textColor: 'text-white',
     logoText: 'NEW',
   },
   {
-    badge: '🎁 무료 배송',
-    title: '배송비 걱정 없이',
-    subtitle: '편하게 쇼핑하세요',
-    description: '전 상품 무료 배송 진행 중',
+    badge: '🎁 Free Shipping',
+    title: 'Shop with Confidence',
+    subtitle: 'Free Shipping',
+    description: 'Free shipping on all products',
     bgGradient: 'from-emerald-900 to-emerald-800',
     textColor: 'text-white',
     logoText: 'FREE',
   },
   {
-    badge: '🏆 베스트 셀러',
-    title: '지금 가장 핫한',
-    subtitle: '인기 아이템',
-    description: '매주 업데이트되는 베스트 컬렉션',
+    badge: '🏆 Best Sellers',
+    title: 'Trending Now',
+    subtitle: 'Popular Items',
+    description: 'Updated weekly with best collection',
     bgGradient: 'from-orange-900 to-orange-800',
     textColor: 'text-white',
     logoText: 'BEST',
@@ -91,7 +91,7 @@ export const HeroSection = () => {
   }, [emblaApi]);
 
   return (
-    <section ref={ref} className="relative bg-white pt-4 pb-2">
+    <section ref={ref} className="relative bg-white pt-4 pb-0">
       <div className="container mx-auto px-4">
         <div className="relative rounded-2xl overflow-hidden">
           {/* Embla Carousel */}
@@ -161,7 +161,7 @@ export const HeroSection = () => {
                             className="bg-white text-gray-900 hover:bg-gray-100 text-base px-8 py-6 group"
                             onClick={scrollToProducts}
                           >
-                            지금 쇼핑하기
+                            Shop Now
                             <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                           </Button>
                         </motion.div>
@@ -204,8 +204,6 @@ export const HeroSection = () => {
             ))}
           </div>
         </div>
-
-
       </div>
     </section>
   );

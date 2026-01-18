@@ -1,72 +1,77 @@
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Sparkles } from 'lucide-react';
 
 export function ShopComingSoonSection() {
-  return (
-    <section className="py-20 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 relative overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500 rounded-full blur-3xl"></div>
-      </div>
+  const brandHighlights = [
+    {
+      title: 'Authentic Style',
+      description: 'Curated fashion from emerging and established brands'
+    },
+    {
+      title: 'Community First',
+      description: 'Share your OOTD and connect with fashion enthusiasts'
+    },
+    {
+      title: 'Curated Selection',
+      description: 'Handpicked pieces that match your vibe'
+    }
+  ];
 
+  return (
+    <section className="py-12 bg-white relative overflow-hidden">
       <div className="container mx-auto px-4 relative z-10">
-        <div className="max-w-3xl mx-auto text-center">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 rounded-full mb-6">
-            <span className="text-white/70 text-sm font-medium">Coming Soon</span>
-            <span className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></span>
+        <div className="max-w-4xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 mb-4">
+              <Sparkles className="w-5 h-5 text-gray-900" />
+              <span className="text-sm font-medium text-gray-600 uppercase tracking-wider">One Some Studio</span>
+            </div>
+            
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              One Some Shopping<br />is Coming Soon
+            </h2>
+            
+            <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+              A fashion community platform where style meets inspiration. We're carefully curating premium brands and emerging designers.
+            </p>
           </div>
 
-          {/* Title */}
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            Shopping Experience Awaits
-          </h2>
-
-          {/* Description */}
-          <p className="text-lg text-gray-300 mb-8">
-            Share your style, find inspiration,
-            <br />
-            and discover everything you love in one place.
-          </p>
+          {/* Brand Highlights + Waitlist Combined */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            {brandHighlights.map((item, idx) => (
+              <div key={idx} className="p-6 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors">
+                <h3 className="text-base font-semibold text-gray-900 mb-2">{item.title}</h3>
+                <p className="text-sm text-gray-600 font-light">{item.description}</p>
+              </div>
+            ))}
+          </div>
 
           {/* Waitlist Section */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="px-6 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 transition-colors w-full sm:w-96"
-            />
-            <Button
-              className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold flex items-center gap-2 whitespace-nowrap w-full sm:w-auto"
-            >
-              Join Waitlist
-              <ArrowRight className="w-4 h-4" />
-            </Button>
-          </div>
-
-          {/* Coming Soon Details */}
-          <div className="grid grid-cols-3 gap-4 sm:gap-8 text-center">
-            <div>
-              <div className="text-2xl sm:text-3xl font-bold text-blue-400 mb-2">2000+</div>
-              <p className="text-white/70 text-sm">Products</p>
-            </div>
-            <div>
-              <div className="text-2xl sm:text-3xl font-bold text-blue-400 mb-2">50+</div>
-              <p className="text-white/70 text-sm">Brands</p>
-            </div>
-            <div>
-              <div className="text-2xl sm:text-3xl font-bold text-blue-400 mb-2">∞</div>
-              <p className="text-white/70 text-sm">Styles</p>
+          <div className="bg-gray-50 rounded-xl border border-gray-200 p-8 mb-8">
+            <p className="text-center text-sm text-gray-600 mb-4 font-light">
+              Be the first to know when we launch
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+              <input
+                type="email"
+                placeholder="Enter your email"
+                className="px-4 py-2.5 rounded-lg bg-white border border-gray-300 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-colors w-full sm:w-80 text-sm"
+              />
+              <Button
+                className="bg-gray-900 hover:bg-gray-800 text-white px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 whitespace-nowrap w-full sm:w-auto text-sm"
+              >
+                Get Notified
+                <ArrowRight className="w-4 h-4" />
+              </Button>
             </div>
           </div>
 
-          {/* Secondary CTA */}
-          <div className="mt-12 pt-8 border-t border-white/10">
-            <p className="text-gray-400 mb-4">Share your style in our community</p>
+          {/* CTA */}
+          <div className="text-center mt-8 pt-8 border-t border-gray-200">
             <a
               href="/community"
-              className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 font-semibold transition-colors"
+              className="inline-flex items-center gap-2 text-gray-900 hover:text-gray-700 font-medium transition-colors"
             >
               Explore Community
               <ArrowRight className="w-4 h-4" />

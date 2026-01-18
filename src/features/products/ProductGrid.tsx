@@ -56,10 +56,10 @@ export function ProductGrid({ filterLiked = false, likedProductIds = [], showTit
             className="text-center mb-12"
           >
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              인기 상품
+              Popular Products
             </h2>
             <p className="text-gray-600 text-lg">
-              지금 가장 핫한 아이템을 만나보세요
+              Discover the hottest items right now
             </p>
           </div>
         )}

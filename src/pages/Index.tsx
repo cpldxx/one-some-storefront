@@ -7,10 +7,14 @@ import { ShopComingSoonSection } from '@/features/landing/ShopComingSoonSection'
 import { fetchStylePosts } from '@/lib/community';
 
 const Index = () => {
-  const { data: stylePosts = [] } = useQuery({
-    queryKey: ['style-posts'],
-    queryFn: () => fetchStylePosts(),
+  const { data: postsData } = useQuery({
+    queryKey: ['style-posts', 0],
+    queryFn: () => fetchStylePosts(0, 20),
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
+
+  const stylePosts = postsData || [];
 
   return (
     <Layout>

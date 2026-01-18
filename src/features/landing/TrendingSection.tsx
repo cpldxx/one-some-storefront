@@ -1,5 +1,5 @@
 import { StyleCard } from '@/features/community/StyleCard';
-import { StylePost } from '@/lib/community';
+import { StylePost } from '@/types/database';
 import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 
@@ -8,10 +8,10 @@ interface TrendingSectionProps {
 }
 
 export function TrendingSection({ posts }: TrendingSectionProps) {
-  const trendingPosts = posts.slice(12, 24); // 4x3 grid
+  const trendingPosts = posts.slice(8, 16); // 4x2 grid
 
   return (
-    <section className="py-12 bg-gray-50">
+    <section className="py-8 bg-gray-50">
       <div className="container mx-auto px-4">
         {/* Section Title */}
         <div className="mb-8">
@@ -22,20 +22,20 @@ export function TrendingSection({ posts }: TrendingSectionProps) {
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {trendingPosts.map((post) => (
             <StyleCard key={post.id} post={post} />
           ))}
         </div>
 
-        {/* More Button */}
+        {/* View More Button */}
         <div className="flex justify-center mt-8">
           <Link
             to="/community"
-            className="inline-flex items-center gap-1 text-gray-900 font-medium hover:text-gray-600 transition-colors group"
+            className="inline-flex items-center gap-2 text-gray-700 hover:text-gray-900 font-light text-sm transition-colors"
           >
             View More
-            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            <ChevronRight className="w-4 h-4" />
           </Link>
         </div>
       </div>

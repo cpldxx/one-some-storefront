@@ -226,6 +226,144 @@ export async function storefrontApiRequest(query: string, variables: Record<stri
   }
 }
 
+// Mock 데이터 (테스트용)
+function generateMockProducts(): ShopifyProduct[] {
+  return [
+    {
+      node: {
+        id: 'gid://shopify/Product/1',
+        title: '프리미엄 반팔 티셔츠',
+        description: '고급 면 소재로 만든 편안한 반팔 티셔츠입니다.',
+        handle: 'premium-tshirt',
+        priceRange: {
+          minVariantPrice: {
+            amount: '29.99',
+            currencyCode: 'CAD'
+          }
+        },
+        images: {
+          edges: [
+            {
+              node: {
+                url: '/src/assets/products/tshirt.jpg',
+                altText: '프리미엄 반팔 티셔츠'
+              }
+            }
+          ]
+        },
+        variants: {
+          edges: [
+            {
+              node: {
+                id: 'gid://shopify/ProductVariant/1',
+                title: 'Small / Black',
+                price: { amount: '29.99', currencyCode: 'CAD' },
+                availableForSale: true,
+                selectedOptions: [
+                  { name: 'Size', value: 'Small' },
+                  { name: 'Color', value: 'Black' }
+                ]
+              }
+            }
+          ]
+        },
+        options: [
+          { name: 'Size', values: ['Small', 'Medium', 'Large', 'XL'] },
+          { name: 'Color', values: ['Black', 'White', 'Blue'] }
+        ]
+      }
+    },
+    {
+      node: {
+        id: 'gid://shopify/Product/2',
+        title: 'Casual Denim Jacket',
+        description: 'A classic-style denim jacket that goes well with various styles.',
+        handle: 'casual-denim-jacket',
+        priceRange: {
+          minVariantPrice: {
+            amount: '79.99',
+            currencyCode: 'CAD'
+          }
+        },
+        images: {
+          edges: [
+            {
+              node: {
+                url: '/src/assets/products/jacket.jpg',
+                altText: 'Casual Denim Jacket'
+              }
+            }
+          ]
+        },
+        variants: {
+          edges: [
+            {
+              node: {
+                id: 'gid://shopify/ProductVariant/2',
+                title: 'Medium / Blue',
+                price: { amount: '79.99', currencyCode: 'CAD' },
+                availableForSale: true,
+                selectedOptions: [
+                  { name: 'Size', value: 'Medium' },
+                  { name: 'Color', value: 'Blue' }
+                ]
+              }
+            }
+          ]
+        },
+        options: [
+          { name: 'Size', values: ['Small', 'Medium', 'Large', 'XL'] },
+          { name: 'Color', values: ['Blue', 'Black', 'Light Blue'] }
+        ]
+      }
+    },
+    {
+      node: {
+        id: 'gid://shopify/Product/3',
+        title: 'Comfortable Sweatpants',
+        description: 'Comfortable sweatpants made from soft cotton fabric.',
+        handle: 'comfortable-sweatpants',
+        priceRange: {
+          minVariantPrice: {
+            amount: '49.99',
+            currencyCode: 'CAD'
+          }
+        },
+        images: {
+          edges: [
+            {
+              node: {
+                url: '/src/assets/products/sweatpants.jpg',
+                altText: 'Comfortable Sweatpants'
+              }
+            }
+          ]
+        },
+        variants: {
+          edges: [
+            {
+              node: {
+                id: 'gid://shopify/ProductVariant/3',
+                title: 'Medium / Gray',
+                price: { amount: '49.99', currencyCode: 'CAD' },
+                availableForSale: true,
+                selectedOptions: [
+                  { name: 'Size', value: 'Medium' },
+                  { name: 'Color', value: 'Gray' }
+                ]
+              }
+            }
+          ]
+        },
+        options: [
+          { name: 'Size', values: ['Small', 'Medium', 'Large', 'XL'] },
+          { name: 'Color', values: ['Gray', 'Black', 'Navy'] }
+        ]
+      }
+    }
+  ];
+}
+
 // API Functions
 export async function fetchProducts(first: number = 50): Promise<ShopifyProduct[]> {
   try {

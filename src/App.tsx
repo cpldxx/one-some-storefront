@@ -9,6 +9,7 @@ import ProductPage from "./pages/ProductPage";
 import LikesPage from "./pages/LikesPage";
 import MyPage from "./pages/MyPage";
 import NotFound from "./pages/NotFound";
+import Login from "./pages/Login";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -28,6 +29,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/community" element={<Community />} />
           <Route path="/shop" element={<ShopPage />} />
           <Route path="/product/:handle" element={<ProductPage />} />

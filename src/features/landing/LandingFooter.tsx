@@ -8,22 +8,22 @@ export const LandingFooter = () => {
 
   const footerLinks = {
     shop: [
-      { label: '전체 상품', to: '/' },
-      { label: '신상품', to: '/' },
-      { label: '베스트', to: '/' },
-      { label: '세일', to: '/' },
+      { label: 'All Products', to: '/' },
+      { label: 'New Arrivals', to: '/' },
+      { label: 'Best Sellers', to: '/' },
+      { label: 'Sale', to: '/' },
     ],
     help: [
-      { label: '배송 안내', to: '/' },
-      { label: '교환/반품', to: '/' },
-      { label: '이용약관', to: '/' },
-      { label: '개인정보처리방침', to: '/' },
+      { label: 'Shipping Info', to: '/' },
+      { label: 'Returns & Exchanges', to: '/' },
+      { label: 'Terms of Service', to: '/' },
+      { label: 'Privacy Policy', to: '/' },
     ],
     about: [
-      { label: '회사 소개', to: '/' },
-      { label: '채용', to: '/' },
-      { label: '매장 안내', to: '/' },
-      { label: '제휴 문의', to: '/' },
+      { label: 'About Us', to: '/' },
+      { label: 'Careers', to: '/' },
+      { label: 'Store Locator', to: '/' },
+      { label: 'Partnership', to: '/' },
     ],
   };
 
@@ -44,13 +44,13 @@ export const LandingFooter = () => {
     >
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-          {/* 브랜드 정보 */}
+          {/* Brand Info */}
           <div>
             <h3 className="text-white text-2xl font-bold mb-4">One Some</h3>
             <p className="text-sm mb-4">
-              프리미엄 스트릿 패션으로
+              Complete your unique style with
               <br />
-              당신만의 스타일을 완성하세요
+              premium street fashion
             </p>
             <div className="flex gap-4">
               {socialLinks.map((social, index) => {
