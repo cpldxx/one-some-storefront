@@ -1,28 +1,90 @@
 import { Heart, MessageCircle, Share2 } from 'lucide-react';
 import { StylePost } from '@/types/database';
-import { useLikedStore } from '@/stores/likedStore';
-import { useCallback } from 'react';
+import { useCallback, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/lib/supabase';
+import { togglePostLike, checkUserLiked } from '@/lib/community';
 
 interface StyleCardProps {
   post: StylePost;
-  onLike?: (postId: string, liked: boolean) => void;
+  onLikeUpdate?: (postId: string, likeCount: number) => void;
 }
 
-export function StyleCard({ post, onLike }: StyleCardProps) {
-  const { toggleLike, isLiked } = useLikedStore();
-  const liked = isLiked(post.id);
+export function StyleCard({ post, onLikeUpdate }: StyleCardProps) {
+  const navigate = useNavigate();
+  const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(post.like_count);
+  const [commentCount, setCommentCount] = useState(post.comment_count);
+  const [isLiking, setIsLiking] = useState(false);
 
-  const handleLike = useCallback(() => {
-    toggleLike(post.id);
-    onLike?.(post.id, !liked);
-  }, [post.id, liked, toggleLike, onLike]);
+  // post prop이 변경되면 state 업데이트 (다른 곳에서 변경된 경우)
+  useEffect(() => {
+    setLikeCount(post.like_count);
+    setCommentCount(post.comment_count);
+  }, [post.like_count, post.comment_count]);
+
+  // 초기 좋아요 상태 확인
+  useEffect(() => {
+    const checkLiked = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const isLiked = await checkUserLiked(post.id, user.id);
+        setLiked(isLiked);
+      }
+    };
+    checkLiked();
+  }, [post.id]);
+
+  const handleLike = useCallback(async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    if (isLiking) return; // 중복 클릭 방지
+    
+    // 로그인 체크
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      alert('좋아요를 누르려면 로그인이 필요합니다!');
+      navigate('/login');
+      return;
+    }
+    
+    setIsLiking(true);
+    
+    // 낙관적 업데이트 (UI 먼저 변경)
+    const newLiked = !liked;
+    const newCount = newLiked ? likeCount + 1 : Math.max(0, likeCount - 1);
+    setLiked(newLiked);
+    setLikeCount(newCount);
+    
+    try {
+      // DB에 저장
+      const result = await togglePostLike(post.id, user.id);
+      setLiked(result.liked);
+      setLikeCount(result.likeCount);
+      onLikeUpdate?.(post.id, result.likeCount);
+    } catch (error) {
+      // 실패 시 롤백
+      setLiked(liked);
+      setLikeCount(likeCount);
+      console.error('좋아요 처리 실패:', error);
+    } finally {
+      setIsLiking(false);
+    }
+  }, [post.id, liked, likeCount, isLiking, navigate, onLikeUpdate]);
+
+  const handleCardClick = () => {
+    navigate(`/community/${post.id}`);
+  };
 
   return (
-    <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+    <div 
+      onClick={handleCardClick}
+      className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+    >
       {/* Image Container */}
       <div className="relative bg-gray-100 aspect-[3/4] overflow-hidden group">
         <img
-          src={post.image_url}
+          src={encodeURI(post.image_url)}
           alt={post.description}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           onError={(e) => {
@@ -88,13 +150,16 @@ export function StyleCard({ post, onLike }: StyleCardProps) {
         {/* Engagement Stats */}
         <div className="flex items-center justify-between text-xs text-gray-600 border-t pt-2">
           <div className="flex items-center gap-3">
-            <button className="flex items-center gap-1 hover:text-red-500 transition-colors">
-              <Heart className="w-4 h-4" fill="currentColor" />
-              <span>{post.like_count.toLocaleString()}</span>
+            <button 
+              onClick={handleLike}
+              className={`flex items-center gap-1 transition-colors ${liked ? 'text-red-500' : 'hover:text-red-500'}`}
+            >
+              <Heart className={`w-4 h-4 ${liked ? 'fill-red-500' : ''}`} />
+              <span>{likeCount.toLocaleString()}</span>
             </button>
             <button className="flex items-center gap-1 hover:text-blue-500 transition-colors">
               <MessageCircle className="w-4 h-4" />
-              <span>{post.comment_count}</span>
+              <span>{commentCount}</span>
             </button>
           </div>
           <button className="hover:text-blue-500 transition-colors">

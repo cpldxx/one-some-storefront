@@ -148,10 +148,11 @@ export interface Database {
  * Used in posts.tags JSONB column
  */
 export interface PostTags {
-  season: string[] // ["Spring", "Summer", "Fall", "Winter"]
-  style: string[] // ["Casual", "Minimal", "Romantic", "Trendy", "Classic", "Street"]
-  brand: string[] // ["ZARA", "Musinsa", "H&M", etc.]
-  category: string[] // ["Top", "Bottom", "Outer", "Dress", "Shoes", "Accessories"]
+  gender?: string[] // ["Male", "Female", "Unisex"]
+  season?: string[] // ["Spring", "Summer", "Autumn", "Winter"]
+  style?: string[] // ["Minimal", "Street", "Casual", "Amekaji", "Sporty", "Classic", "Grunge"]
+  brand?: string[] // ["Nike", "Adidas", "Stussy", "Supreme", "New Balance", "Other"]
+  category?: string[] // ["Tops", "Bottoms", "Outerwear", "Shoes", "Accessories", "Headwear"]
 }
 
 /**

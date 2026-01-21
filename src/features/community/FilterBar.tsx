@@ -1,115 +1,149 @@
 import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { FILTERS, FILTER_LABELS, FilterCategory } from '@/constants/filters';
+import { FilterModal } from './FilterModal';
 
 interface FilterBarProps {
   onFilterChange?: (filters: FilterState) => void;
+  onSortChange?: (sort: 'popular' | 'latest') => void;
+  postCount?: number;
 }
 
 export interface FilterState {
-  season?: string;
-  style?: string;
-  brand?: string;
-  category?: string;
-  gender?: string;
+  season?: string[];
+  style?: string[];
+  brand?: string[];
+  category?: string[];
+  gender?: string[];
 }
 
-const FILTER_OPTIONS = {
-  gender: ['Male', 'Female', 'Unisex'],
-  season: ['Spring', 'Summer', 'Fall', 'Winter'],
-  style: ['Casual', 'Minimal', 'Romantic', 'Trendy', 'Classic', 'Street'],
-  category: ['Top', 'Bottom', 'Outer', 'Dress', 'Shoes', 'Accessories'],
-  brand: ['ZARA', 'Musinsa', 'H&M', 'Uniqlo', 'Ably'],
-};
-
-export function FilterBar({ onFilterChange }: FilterBarProps) {
+export function FilterBar({ onFilterChange, onSortChange, postCount }: FilterBarProps) {
   const [filters, setFilters] = useState<FilterState>({});
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [activeModal, setActiveModal] = useState<FilterCategory | null>(null);
+  const [sortBy, setSortBy] = useState<'popular' | 'latest'>('latest');
+  const [showSortMenu, setShowSortMenu] = useState(false);
 
-  const handleFilterSelect = (key: string, value: string) => {
+  const handleFilterApply = (key: FilterCategory, selected: string[]) => {
     const newFilters = {
       ...filters,
-      [key]: filters[key as keyof FilterState] === value ? undefined : value,
+      [key]: selected.length > 0 ? selected : undefined,
     };
     setFilters(newFilters);
     onFilterChange?.(newFilters);
-    setOpenDropdown(null);
   };
 
-  const filterTags = [
-    { label: 'Gender', key: 'gender', icon: '👥' },
-    { label: 'Season', key: 'season', icon: '🌸' },
-    { label: 'Style', key: 'style', icon: '✨' },
-    { label: 'Category', key: 'category', icon: '👔' },
-    { label: 'Brand', key: 'brand', icon: '🏷️' },
-  ];
+  const handleResetAll = () => {
+    setFilters({});
+    onFilterChange?.({});
+  };
+
+  const handleSortChange = (sort: 'popular' | 'latest') => {
+    setSortBy(sort);
+    setShowSortMenu(false);
+    onSortChange?.(sort);
+  };
+
+  const filterKeys: FilterCategory[] = ['gender', 'season', 'style', 'category', 'brand'];
+
+  // 선택된 필터 개수 계산
+  const totalSelectedCount = filterKeys.reduce((count, key) => {
+    return count + (filters[key]?.length || 0);
+  }, 0);
 
   return (
     <div className="bg-white sticky top-0 z-20 border-b">
-      {/* Top Navigation Tabs */}
-      <div className="container mx-auto px-4">
-        <div className="flex items-center gap-6 h-12 border-b">
-          <button className="text-sm font-semibold text-gray-900 border-b-2 border-gray-900 pb-3 h-12 flex items-center">
-            스냅
-          </button>
-          <button className="text-sm text-gray-600 hover:text-gray-900 transition-colors pb-3 h-12 flex items-center">
-            투데이
-          </button>
-          <button className="text-sm text-gray-600 hover:text-gray-900 transition-colors pb-3 h-12 flex items-center">
-            랭킹
-          </button>
-          <button className="text-sm text-gray-600 hover:text-gray-900 transition-colors pb-3 h-12 flex items-center">
-            팔로잉
-          </button>
-        </div>
-      </div>
-
-      {/* Filter Chips */}
-      <div className="container mx-auto px-4 py-3 flex items-center gap-2 overflow-x-auto pb-2">
-        {filterTags.map((tag) => (
-          <div key={tag.key} className="relative">
+      {/* 한 줄에 필터 + 포스트 수 + 정렬 */}
+      <div className="container mx-auto px-4 py-3 flex items-center gap-2">
+        {/* 필터 버튼들 */}
+        <div className="flex items-center gap-2 overflow-x-auto flex-1">
+          {totalSelectedCount > 0 && (
             <Button
               variant="outline"
               size="sm"
-              className="text-xs whitespace-nowrap"
-              onClick={() => setOpenDropdown(openDropdown === tag.key ? null : tag.key)}
+              onClick={handleResetAll}
+              className="text-xs whitespace-nowrap border-red-300 text-red-500 hover:bg-red-50"
             >
-              {tag.icon} {tag.label}
-              {filters[tag.key as keyof FilterState] && (
-                <span className="ml-1 text-red-500 font-bold">✓</span>
-              )}
-              <ChevronDown className="w-3 h-3 ml-1" />
+              초기화 ({totalSelectedCount})
             </Button>
+          )}
 
-            {/* Dropdown Menu */}
-            {openDropdown === tag.key && (
-              <div className="absolute top-full left-0 mt-1 bg-white border rounded-lg shadow-lg z-30 min-w-max">
-                {FILTER_OPTIONS[tag.key as keyof typeof FILTER_OPTIONS].map((option) => (
+          {filterKeys.map((key) => {
+            const count = filters[key]?.length || 0;
+            return (
+              <Button
+                key={key}
+                variant="outline"
+                size="sm"
+                className={`text-xs whitespace-nowrap ${
+                  count > 0 ? 'border-black bg-black text-white hover:bg-gray-800' : ''
+                }`}
+                onClick={() => setActiveModal(key)}
+              >
+                {FILTER_LABELS[key]}
+                {count > 0 && <span className="ml-1 font-bold">{count}</span>}
+                <ChevronDown className="w-3 h-3 ml-1" />
+              </Button>
+            );
+          })}
+        </div>
+
+        {/* 포스트 수 + 정렬 (오른쪽) */}
+        <div className="flex items-center gap-3 text-xs text-gray-600 whitespace-nowrap">
+          <span>{postCount !== undefined ? `${postCount.toLocaleString()}개` : ''}</span>
+          
+          {/* 정렬 드롭다운 */}
+          <div className="relative">
+            <button 
+              onClick={() => setShowSortMenu(!showSortMenu)}
+              className="flex items-center gap-1 hover:text-gray-900 transition-colors font-medium"
+            >
+              {sortBy === 'popular' ? '인기순' : '최신순'} 
+              <ChevronDown className="w-3 h-3" />
+            </button>
+            
+            {showSortMenu && (
+              <>
+                <div 
+                  className="fixed inset-0 z-40" 
+                  onClick={() => setShowSortMenu(false)} 
+                />
+                <div className="absolute right-0 top-full mt-1 bg-white border rounded-lg shadow-lg z-50 py-1 min-w-[80px]">
                   <button
-                    key={option}
-                    onClick={() => handleFilterSelect(tag.key, option)}
-                    className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 border-b last:border-b-0 transition-colors ${
-                      filters[tag.key as keyof FilterState] === option
-                        ? 'bg-gray-100 font-semibold text-gray-900'
-                        : 'text-gray-700'
+                    onClick={() => handleSortChange('latest')}
+                    className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
+                      sortBy === 'latest' ? 'font-bold text-black' : 'text-gray-600'
                     }`}
                   >
-                    {option}
+                    최신순
                   </button>
-                ))}
-              </div>
+                  <button
+                    onClick={() => handleSortChange('popular')}
+                    className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
+                      sortBy === 'popular' ? 'font-bold text-black' : 'text-gray-600'
+                    }`}
+                  >
+                    인기순
+                  </button>
+                </div>
+              </>
             )}
           </div>
-        ))}
+        </div>
       </div>
 
-      {/* Count & Sort */}
-      <div className="container mx-auto px-4 py-2 flex items-center justify-between text-xs text-gray-600 border-t">
-        <span>1,157,411개</span>
-        <button className="flex items-center gap-1 hover:text-gray-900 transition-colors">
-          인기순 <ChevronDown className="w-3 h-3" />
-        </button>
-      </div>
+      {/* Filter Modals */}
+      {filterKeys.map((key) => (
+        <FilterModal
+          key={key}
+          isOpen={activeModal === key}
+          onClose={() => setActiveModal(null)}
+          title={FILTER_LABELS[key]}
+          options={FILTERS[key]}
+          selectedValues={filters[key] || []}
+          onApply={(selected) => handleFilterApply(key, selected)}
+        />
+      ))}
     </div>
   );
 }

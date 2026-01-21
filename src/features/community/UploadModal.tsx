@@ -22,28 +22,36 @@ import { createPost } from '@/lib/community';
 import { PostTags } from '@/types/database';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
+import { FILTERS } from '@/constants/filters';
 
 interface UploadFormData {
   description: string;
+  gender: string;
   season: string;
   style: string;
   brand: string;
   category: string;
 }
 
-const SEASONS = ['Spring', 'Summer', 'Fall', 'Winter'];
-const STYLES = ['Casual', 'Minimal', 'Romantic', 'Trendy', 'Classic', 'Street'];
-const BRANDS = ['ZARA', 'Musinsa', 'H&M', 'Uniqlo', 'Ably', 'Miss Nelly', 'Hugo Boss'];
-const CATEGORIES = ['Top', 'Bottom', 'Outer', 'Dress', 'Shoes', 'Accessories'];
+interface UploadModalProps {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}
 
-export function UploadModal() {
-  const [open, setOpen] = useState(false);
+export function UploadModal({ open: controlledOpen, onOpenChange }: UploadModalProps) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  
+  // 외부에서 제어하거나 내부 상태 사용
+  const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
+  const setOpen = onOpenChange || setInternalOpen;
+  
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { register, handleSubmit, reset, control } = useForm<UploadFormData>({
     defaultValues: {
       description: '',
+      gender: '',
       season: '',
       style: '',
       brand: '',
@@ -86,18 +94,25 @@ export function UploadModal() {
 
     setIsLoading(true);
     try {
+      console.log('[UploadModal] Starting upload...');
+      
       // 1. R2에 이미지 업로드
+      console.log('[UploadModal] Uploading image to R2...');
       const imageUrl = await uploadImage(imageFile);
+      console.log('[UploadModal] Image uploaded:', imageUrl);
 
-      // 2. 태그 객체 생성
+      // 2. 태그 객체 생성 (FILTERS 기반 영문 태그)
       const tags: PostTags = {
+        gender: data.gender ? [data.gender] : [],
         season: data.season ? [data.season] : [],
         style: data.style ? [data.style] : [],
         brand: data.brand ? [data.brand] : [],
         category: data.category ? [data.category] : [],
       };
+      console.log('[UploadModal] Tags:', tags);
 
       // 3. Supabase에 포스트 생성
+      console.log('[UploadModal] Creating post in Supabase...');
       await createPost(
         {
           imageUrl,
@@ -106,6 +121,7 @@ export function UploadModal() {
         },
         userId
       );
+      console.log('[UploadModal] Post created successfully!');
 
       // 4. Query 재실행
       queryClient.invalidateQueries({ queryKey: ['style-posts'] });
@@ -117,7 +133,7 @@ export function UploadModal() {
       setImagePreview(null);
       alert('Post created successfully!');
     } catch (error) {
-      console.error('Upload error:', error);
+      console.error('[UploadModal] Upload error:', error);
       alert('Failed to upload post. Please try again.');
     } finally {
       setIsLoading(false);
@@ -126,15 +142,18 @@ export function UploadModal() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button
-          size="lg"
-          className="fixed bottom-24 right-4 md:bottom-auto md:relative rounded-full w-14 h-14 p-0 md:w-auto md:h-auto md:px-4 md:py-2 flex items-center justify-center"
-        >
-          <Plus className="w-6 h-6" />
-          <span className="hidden md:inline ml-2">Create Post</span>
-        </Button>
-      </DialogTrigger>
+      {/* 외부 제어가 아닐 때만 트리거 버튼 표시 */}
+      {controlledOpen === undefined && (
+        <DialogTrigger asChild>
+          <Button
+            size="lg"
+            className="fixed bottom-24 right-4 md:bottom-auto md:relative rounded-full w-14 h-14 p-0 md:w-auto md:h-auto md:px-4 md:py-2 flex items-center justify-center"
+          >
+            <Plus className="w-6 h-6" />
+            <span className="hidden md:inline ml-2">Create Post</span>
+          </Button>
+        </DialogTrigger>
+      )}
 
       <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
@@ -191,6 +210,29 @@ export function UploadModal() {
             />
           </div>
 
+          {/* Gender */}
+          <div>
+            <label className="block text-sm font-medium mb-2">Gender</label>
+            <Controller
+              name="gender"
+              control={control}
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select gender" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {FILTERS.gender.map((gender) => (
+                      <SelectItem key={gender} value={gender}>
+                        {gender}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+          </div>
+
           {/* Season */}
           <div>
             <label className="block text-sm font-medium mb-2">Season</label>
@@ -203,7 +245,7 @@ export function UploadModal() {
                     <SelectValue placeholder="Select season" />
                   </SelectTrigger>
                   <SelectContent>
-                    {SEASONS.map((season) => (
+                    {FILTERS.season.map((season) => (
                       <SelectItem key={season} value={season}>
                         {season}
                       </SelectItem>
@@ -226,7 +268,7 @@ export function UploadModal() {
                     <SelectValue placeholder="Select style" />
                   </SelectTrigger>
                   <SelectContent>
-                    {STYLES.map((style) => (
+                    {FILTERS.style.map((style) => (
                       <SelectItem key={style} value={style}>
                         {style}
                       </SelectItem>
@@ -249,7 +291,7 @@ export function UploadModal() {
                     <SelectValue placeholder="Select brand" />
                   </SelectTrigger>
                   <SelectContent>
-                    {BRANDS.map((brand) => (
+                    {FILTERS.brand.map((brand) => (
                       <SelectItem key={brand} value={brand}>
                         {brand}
                       </SelectItem>
@@ -272,7 +314,7 @@ export function UploadModal() {
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
                   <SelectContent>
-                    {CATEGORIES.map((category) => (
+                    {FILTERS.category.map((category) => (
                       <SelectItem key={category} value={category}>
                         {category}
                       </SelectItem>

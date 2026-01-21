@@ -18,14 +18,16 @@ export async function fetchStylePosts(
   page: number = 0,
   limit: number = 20,
   filters?: {
-    season?: string;
-    style?: string;
-    brand?: string;
-    category?: string;
-  }
+    season?: string[];
+    style?: string[];
+    brand?: string[];
+    category?: string[];
+    gender?: string[];
+  },
+  sortBy: 'popular' | 'latest' = 'latest'
 ): Promise<StylePost[]> {
   try {
-    const { data, error } = await (supabase
+    let query = supabase
       .from('posts')
       .select(
         `
@@ -33,24 +35,77 @@ export async function fetchStylePosts(
         profile:user_id(id, email, username, avatar_url, bio),
         likes(user_id)
       `
-      )
-      .order('created_at', { ascending: false })
+      );
+
+    // 정렬 적용
+    if (sortBy === 'popular') {
+      query = query.order('like_count', { ascending: false });
+    } else {
+      query = query.order('created_at', { ascending: false });
+    }
+
+    // Apply tag filters using JSONB containedBy for each active filter
+    // We fetch all posts and filter client-side for complex OR conditions
+    // For simple single-value filters, we can use .contains()
+    
+    const { data, error } = await (query
       .range(page * limit, (page + 1) * limit - 1) as any);
 
     if (error) {
+      // AbortError는 무시 (React Strict Mode에서 발생)
+      if (error.message?.includes('AbortError') || error.code === 'ABORT_ERR') {
+        console.log('[Community] Request aborted (expected in dev mode)');
+        return [];
+      }
       console.error('[Community] Error fetching posts:', error);
       throw error;
     }
 
     // 응답 데이터 변환
-    const posts: StylePost[] = (data || []).map((post: any) => ({
+    let posts: StylePost[] = (data || []).map((post: any) => ({
       ...post,
       profile: post.profile,
       is_liked: (post.likes || []).length > 0,
     }));
 
+    // 클라이언트 사이드 필터링 (JSONB OR 조건이 복잡해서)
+    const hasActiveFilters = filters && (
+      (filters.season?.length || 0) > 0 ||
+      (filters.style?.length || 0) > 0 ||
+      (filters.brand?.length || 0) > 0 ||
+      (filters.category?.length || 0) > 0 ||
+      (filters.gender?.length || 0) > 0
+    );
+
+    if (hasActiveFilters) {
+      posts = posts.filter((post) => {
+        const tags = post.tags || {};
+        
+        // 각 필터 카테고리에서 하나라도 매칭되면 통과 (OR 조건)
+        // tags는 배열이므로 some()을 사용하여 교집합 체크
+        const matchesSeason = !filters.season?.length || 
+          (tags.season?.some(t => filters.season!.includes(t)) ?? false);
+        const matchesStyle = !filters.style?.length || 
+          (tags.style?.some(t => filters.style!.includes(t)) ?? false);
+        const matchesBrand = !filters.brand?.length || 
+          (tags.brand?.some(t => filters.brand!.includes(t)) ?? false);
+        const matchesCategory = !filters.category?.length || 
+          (tags.category?.some(t => filters.category!.includes(t)) ?? false);
+        const matchesGender = !filters.gender?.length || 
+          (tags.gender?.some(t => filters.gender!.includes(t)) ?? false);
+        
+        // 모든 활성화된 필터를 통과해야 함 (AND between categories)
+        return matchesSeason && matchesStyle && matchesBrand && matchesCategory && matchesGender;
+      });
+    }
+
     return posts;
-  } catch (error) {
+  } catch (error: any) {
+    // AbortError는 무시 (React Strict Mode에서 발생)
+    if (error?.message?.includes('AbortError') || error?.name === 'AbortError') {
+      console.log('[Community] Request aborted (expected in dev mode)');
+      return [];
+    }
     console.error('[Community] Failed to fetch posts:', error);
     throw error;
   }
@@ -208,5 +263,89 @@ export async function addComment(
   } catch (error) {
     console.error('[Community] Error adding comment:', error);
     throw error;
+  }
+}
+
+/**
+ * Toggle like on a post
+ * Returns: { liked: boolean, likeCount: number }
+ */
+export async function togglePostLike(
+  postId: string,
+  userId: string
+): Promise<{ liked: boolean; likeCount: number }> {
+  try {
+    // 1. 기존 좋아요 확인
+    const { data: existingLike } = await supabase
+      .from('likes')
+      .select('id')
+      .eq('post_id', postId)
+      .eq('user_id', userId)
+      .single();
+
+    // 현재 포스트의 like_count 가져오기
+    const { data: currentPost } = await (supabase
+      .from('posts')
+      .select('like_count')
+      .eq('id', postId)
+      .single() as any);
+
+    const currentLikeCount = (currentPost as any)?.like_count || 0;
+
+    if (existingLike) {
+      // 2a. 좋아요 취소 (삭제)
+      await (supabase
+        .from('likes')
+        .delete()
+        .eq('post_id', postId)
+        .eq('user_id', userId) as any);
+
+      // like_count 감소
+      const newCount = Math.max(0, currentLikeCount - 1);
+      await (supabase
+        .from('posts') as any)
+        .update({ like_count: newCount })
+        .eq('id', postId);
+
+      return { liked: false, likeCount: newCount };
+    } else {
+      // 2b. 좋아요 추가
+      await (supabase
+        .from('likes')
+        .insert({ post_id: postId, user_id: userId } as any) as any);
+
+      // like_count 증가
+      const newCount = currentLikeCount + 1;
+      await (supabase
+        .from('posts') as any)
+        .update({ like_count: newCount })
+        .eq('id', postId);
+
+      return { liked: true, likeCount: newCount };
+    }
+  } catch (error) {
+    console.error('[Community] Error toggling like:', error);
+    throw error;
+  }
+}
+
+/**
+ * Check if user liked a post
+ */
+export async function checkUserLiked(
+  postId: string,
+  userId: string
+): Promise<boolean> {
+  try {
+    const { data } = await supabase
+      .from('likes')
+      .select('id')
+      .eq('post_id', postId)
+      .eq('user_id', userId)
+      .single();
+
+    return !!data;
+  } catch {
+    return false;
   }
 }

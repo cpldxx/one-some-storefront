@@ -37,8 +37,8 @@ Deno.serve(async (req) => {
     // 4. 요청 데이터 파싱
     const { fileName, fileType } = await req.json();
 
-    // 5. 파일명 중복 방지
-    const uniqueFileName = `${Date.now()}_${fileName.replace(/\s/g, "_")}`;
+    // 5. 파일명 그대로 사용 (upload.ts에서 이미 안전한 파일명으로 변환됨)
+    const uniqueFileName = fileName;
 
     const command = new PutObjectCommand({
       Bucket: bucketName,
@@ -49,14 +49,18 @@ Deno.serve(async (req) => {
     // 6. 업로드 URL 생성 (10분 유효)
     const uploadUrl = await getSignedUrl(S3, command, { expiresIn: 600 });
 
-    // 7. publicUrl 생성 (endpoint 끝에 슬래시 제거 후 조합)
-    const publicEndpoint = endpoint.replace(/\/$/, "");
+    // 7. publicUrl 생성 (Cloudflare R2 Public URL - 환경변수에서 불러옴)
+    const publicR2Url = Deno.env.get("R2_PUBLIC_URL");
+    
+    if (!publicR2Url) {
+      throw new Error("Missing R2_PUBLIC_URL Environment Variable");
+    }
     
     return new Response(
       JSON.stringify({
         uploadUrl,
         key: uniqueFileName,
-        publicUrl: `${publicEndpoint}/${bucketName}/${uniqueFileName}`,
+        publicUrl: `${publicR2Url}/${uniqueFileName}`,
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },

@@ -8,9 +8,10 @@ import { StylePost } from '@/types/database';
 
 interface StyleGridProps {
   filters?: FilterState;
+  sortBy?: 'popular' | 'latest';
 }
 
-export function StyleGrid({ filters }: StyleGridProps) {
+export function StyleGrid({ filters, sortBy = 'latest' }: StyleGridProps) {
   const observerTarget = useRef<HTMLDivElement>(null);
 
   // Infinite Query를 사용한 페이지네이션
@@ -22,19 +23,28 @@ export function StyleGrid({ filters }: StyleGridProps) {
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({
-    queryKey: ['style-posts', filters],
+    queryKey: ['style-posts', filters, sortBy],
     queryFn: ({ pageParam = 0 }) =>
       fetchStylePosts(pageParam, 20, {
         season: filters?.season,
         style: filters?.style,
         brand: filters?.brand,
         category: filters?.category,
-      }),
+        gender: filters?.gender,
+      }, sortBy),
     getNextPageParam: (lastPage, allPages) =>
       lastPage.length === 20 ? allPages.length : undefined,
     initialPageParam: 0,
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
+    retry: (failureCount, error: any) => {
+      // AbortError는 재시도하지 않음
+      if (error?.message?.includes('AbortError') || error?.name === 'AbortError') {
+        return false;
+      }
+      return failureCount < 3;
+    },
+    refetchOnWindowFocus: false,
   });
 
   // Intersection Observer를 이용한 무한 스크롤

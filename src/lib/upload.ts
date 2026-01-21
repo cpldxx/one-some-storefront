@@ -42,6 +42,18 @@ async function compressImage(file: File): Promise<File> {
 }
 
 /**
+ * 파일명을 안전한 영문으로 변환
+ */
+function sanitizeFileName(originalName: string): string {
+  // 확장자 추출
+  const extension = originalName.split('.').pop()?.toLowerCase() || 'jpg';
+  // 타임스탬프 + 랜덤 문자열로 새 파일명 생성
+  const timestamp = Date.now();
+  const randomStr = Math.random().toString(36).substring(2, 10);
+  return `${timestamp}_${randomStr}.${extension}`;
+}
+
+/**
  * 이미지 파일을 R2에 업로드
  * @param file 업로드할 이미지 파일
  * @returns 업로드된 이미지의 URL
@@ -56,9 +68,9 @@ export async function uploadImage(file: File): Promise<string> {
     // 2. 이미지 압축
     const compressedFile = await compressImage(file);
 
-    // 3. Presigned URL 요청
-    const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}-${file.name}`;
-    const { uploadUrl, publicUrl } = await getPresignedUrl(fileName, compressedFile.type);
+    // 3. 파일명을 안전한 영문으로 변환 (한글 제거)
+    const safeFileName = sanitizeFileName(file.name);
+    const { uploadUrl, publicUrl } = await getPresignedUrl(safeFileName, compressedFile.type);
 
     // 4. R2에 업로드 (PUT)
     const uploadResponse = await fetch(uploadUrl, {
