@@ -7,20 +7,27 @@ import { ShopComingSoonSection } from '@/features/landing/ShopComingSoonSection'
 import { fetchStylePosts } from '@/lib/community';
 
 const Index = () => {
-  const { data: postsData } = useQuery({
-    queryKey: ['style-posts', 0],
-    queryFn: () => fetchStylePosts(0, 20),
+  // Latest posts for AI Picks
+  const { data: latestPosts } = useQuery({
+    queryKey: ['style-posts', 'latest'],
+    queryFn: () => fetchStylePosts(0, 8, undefined, 'latest'),
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
   });
 
-  const stylePosts = postsData || [];
+  // Popular posts for Trending
+  const { data: popularPosts } = useQuery({
+    queryKey: ['style-posts', 'popular'],
+    queryFn: () => fetchStylePosts(0, 8, undefined, 'popular'),
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  });
 
   return (
     <Layout>
       <HeroSection />
-      <AIPickSection posts={stylePosts} />
-      <TrendingSection posts={stylePosts} />
+      <AIPickSection posts={latestPosts || []} />
+      <TrendingSection posts={popularPosts || []} />
       <ShopComingSoonSection />
     </Layout>
   );

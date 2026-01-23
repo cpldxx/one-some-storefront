@@ -28,7 +28,7 @@ export function Header() {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setShowDropdown(false);
-    alert('로그아웃 되었습니다!');
+    alert('Logged out successfully!');
     navigate('/');
   };
 
@@ -113,7 +113,7 @@ export function Header() {
                       <p className="text-sm font-medium text-gray-900 truncate">
                         {user.email}
                       </p>
-                      <p className="text-xs text-gray-500">로그인됨</p>
+                      <p className="text-xs text-gray-500">Logged in</p>
                     </div>
                     <Link
                       to="/mypage"
@@ -121,14 +121,14 @@ export function Header() {
                       className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                     >
                       <User className="w-4 h-4" />
-                      마이페이지
+                      My Page
                     </Link>
                     <button
                       onClick={handleLogout}
                       className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
                     >
                       <LogOut className="w-4 h-4" />
-                      로그아웃
+                      Logout
                     </button>
                   </>
                 ) : (
@@ -137,7 +137,7 @@ export function Header() {
                     className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                   >
                     <LogIn className="w-4 h-4" />
-                    로그인 / 회원가입
+                    Login / Sign Up
                   </button>
                 )}
               </div>

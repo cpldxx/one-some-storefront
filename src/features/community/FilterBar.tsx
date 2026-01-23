@@ -64,7 +64,7 @@ export function FilterBar({ onFilterChange, onSortChange, postCount }: FilterBar
               onClick={handleResetAll}
               className="text-xs whitespace-nowrap border-red-300 text-red-500 hover:bg-red-50"
             >
-              초기화 ({totalSelectedCount})
+              Reset ({totalSelectedCount})
             </Button>
           )}
 
@@ -90,15 +90,15 @@ export function FilterBar({ onFilterChange, onSortChange, postCount }: FilterBar
 
         {/* 포스트 수 + 정렬 (오른쪽) */}
         <div className="flex items-center gap-3 text-xs text-gray-600 whitespace-nowrap">
-          <span>{postCount !== undefined ? `${postCount.toLocaleString()}개` : ''}</span>
+          <span>{postCount !== undefined ? `${postCount.toLocaleString()} posts` : ''}</span>
           
-          {/* 정렬 드롭다운 */}
+          {/* Sort dropdown */}
           <div className="relative">
             <button 
               onClick={() => setShowSortMenu(!showSortMenu)}
               className="flex items-center gap-1 hover:text-gray-900 transition-colors font-medium"
             >
-              {sortBy === 'popular' ? '인기순' : '최신순'} 
+              {sortBy === 'popular' ? 'Popular' : 'Latest'} 
               <ChevronDown className="w-3 h-3" />
             </button>
             
@@ -115,7 +115,7 @@ export function FilterBar({ onFilterChange, onSortChange, postCount }: FilterBar
                       sortBy === 'latest' ? 'font-bold text-black' : 'text-gray-600'
                     }`}
                   >
-                    최신순
+                    Latest
                   </button>
                   <button
                     onClick={() => handleSortChange('popular')}
@@ -123,7 +123,7 @@ export function FilterBar({ onFilterChange, onSortChange, postCount }: FilterBar
                       sortBy === 'popular' ? 'font-bold text-black' : 'text-gray-600'
                     }`}
                   >
-                    인기순
+                    Popular
                   </button>
                 </div>
               </>

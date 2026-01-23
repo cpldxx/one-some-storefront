@@ -32,7 +32,7 @@ const Community = () => {
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) {
-      alert('로그인이 필요합니다!');
+      alert('Please login first!');
       navigate('/login');
       return;
     }

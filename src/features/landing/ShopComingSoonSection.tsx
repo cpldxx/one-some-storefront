@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight, Mail, Store } from 'lucide-react';
 
 export function ShopComingSoonSection() {
   const brandHighlights = [
@@ -23,11 +23,6 @@ export function ShopComingSoonSection() {
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 mb-4">
-              <Sparkles className="w-5 h-5 text-gray-900" />
-              <span className="text-sm font-medium text-gray-600 uppercase tracking-wider">One Some Studio</span>
-            </div>
-            
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
               One Some Shopping<br />is Coming Soon
             </h2>
@@ -47,24 +42,31 @@ export function ShopComingSoonSection() {
             ))}
           </div>
 
-          {/* Waitlist Section */}
-          <div className="bg-gray-50 rounded-xl border border-gray-200 p-8 mb-8">
-            <p className="text-center text-sm text-gray-600 mb-4 font-light">
-              Be the first to know when we launch
+          {/* Brand Partnership Section */}
+          <div className="bg-black rounded-xl p-8 mb-8">
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <h3 className="text-lg font-bold text-white">Brand Partnership</h3>
+            </div>
+            <p className="text-center text-sm text-gray-300 mb-6">
+              Want to showcase your brand on One Some?<br />
+              We're looking for unique fashion brands to join our platform.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
               <input
                 type="email"
-                placeholder="Enter your email"
-                className="px-4 py-2.5 rounded-lg bg-white border border-gray-300 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-colors w-full sm:w-80 text-sm"
+                placeholder="Your business email"
+                className="px-4 py-2.5 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:border-white focus:ring-1 focus:ring-white transition-colors w-full sm:w-80 text-sm"
               />
               <Button
-                className="bg-gray-900 hover:bg-gray-800 text-white px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 whitespace-nowrap w-full sm:w-auto text-sm"
+                className="bg-white hover:bg-gray-100 text-black px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 whitespace-nowrap w-full sm:w-auto text-sm"
               >
-                Get Notified
-                <ArrowRight className="w-4 h-4" />
+                <Mail className="w-4 h-4" />
+                Contact Us
               </Button>
             </div>
+            <p className="text-center text-xs text-gray-500 mt-4">
+              Or email us directly at <a href="mailto:onesomestudio@gmail.com" className="text-white underline hover:no-underline">partner@onesome.com</a>
+            </p>
           </div>
 
           {/* CTA */}

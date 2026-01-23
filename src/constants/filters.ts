@@ -1,4 +1,4 @@
-// 패션 커뮤니티 필터 카테고리 정의 (영어)
+// Fashion community filter categories (English)
 
 export const FILTERS = {
   gender: ['Male', 'Female', 'Unisex'],
@@ -8,15 +8,15 @@ export const FILTERS = {
   brand: ['Nike', 'Adidas', 'Stussy', 'Supreme', 'New Balance', 'Other']
 };
 
-// 필터 카테고리 타입
+// Filter category type
 export type FilterCategory = keyof typeof FILTERS;
 
-// 선택된 필터 상태 타입
+// Selected filters state type
 export type SelectedFilters = {
   [K in FilterCategory]?: string[];
 };
 
-// 한글 라벨 (UI 표시용)
+// Labels for UI display
 export const FILTER_LABELS: Record<FilterCategory, string> = {
   gender: 'Gender',
   season: 'Season',
@@ -25,7 +25,7 @@ export const FILTER_LABELS: Record<FilterCategory, string> = {
   brand: 'Brand'
 };
 
-// 아이콘 (UI 표시용)
+// Icons for UI display
 export const FILTER_ICONS: Record<FilterCategory, string> = {
   gender: '👥',
   season: '🌸',

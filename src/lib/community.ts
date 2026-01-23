@@ -37,7 +37,7 @@ export async function fetchStylePosts(
       `
       );
 
-    // 정렬 적용
+    // Apply sorting
     if (sortBy === 'popular') {
       query = query.order('like_count', { ascending: false });
     } else {
@@ -52,7 +52,7 @@ export async function fetchStylePosts(
       .range(page * limit, (page + 1) * limit - 1) as any);
 
     if (error) {
-      // AbortError는 무시 (React Strict Mode에서 발생)
+      // Ignore AbortError (occurs in React Strict Mode)
       if (error.message?.includes('AbortError') || error.code === 'ABORT_ERR') {
         console.log('[Community] Request aborted (expected in dev mode)');
         return [];
@@ -61,14 +61,14 @@ export async function fetchStylePosts(
       throw error;
     }
 
-    // 응답 데이터 변환
+    // Transform response data
     let posts: StylePost[] = (data || []).map((post: any) => ({
       ...post,
       profile: post.profile,
       is_liked: (post.likes || []).length > 0,
     }));
 
-    // 클라이언트 사이드 필터링 (JSONB OR 조건이 복잡해서)
+    // Client-side filtering (JSONB OR conditions are complex)
     const hasActiveFilters = filters && (
       (filters.season?.length || 0) > 0 ||
       (filters.style?.length || 0) > 0 ||
@@ -81,8 +81,8 @@ export async function fetchStylePosts(
       posts = posts.filter((post) => {
         const tags = post.tags || {};
         
-        // 각 필터 카테고리에서 하나라도 매칭되면 통과 (OR 조건)
-        // tags는 배열이므로 some()을 사용하여 교집합 체크
+        // Pass if at least one matches in each filter category (OR condition)
+        // tags is an array, so use some() to check intersection
         const matchesSeason = !filters.season?.length || 
           (tags.season?.some(t => filters.season!.includes(t)) ?? false);
         const matchesStyle = !filters.style?.length || 
@@ -94,14 +94,14 @@ export async function fetchStylePosts(
         const matchesGender = !filters.gender?.length || 
           (tags.gender?.some(t => filters.gender!.includes(t)) ?? false);
         
-        // 모든 활성화된 필터를 통과해야 함 (AND between categories)
+        // Must pass all active filters (AND between categories)
         return matchesSeason && matchesStyle && matchesBrand && matchesCategory && matchesGender;
       });
     }
 
     return posts;
   } catch (error: any) {
-    // AbortError는 무시 (React Strict Mode에서 발생)
+    // Ignore AbortError (occurs in React Strict Mode)
     if (error?.message?.includes('AbortError') || error?.name === 'AbortError') {
       console.log('[Community] Request aborted (expected in dev mode)');
       return [];

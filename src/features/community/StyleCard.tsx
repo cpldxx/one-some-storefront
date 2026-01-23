@@ -1,9 +1,30 @@
-import { Heart, MessageCircle, Share2 } from 'lucide-react';
+import { Heart, MessageCircle } from 'lucide-react';
 import { StylePost } from '@/types/database';
 import { useCallback, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { togglePostLike, checkUserLiked } from '@/lib/community';
+
+// Helper function to get display name from profile
+const getDisplayName = (profile: any): string => {
+  if (!profile) return 'Anonymous';
+  
+  // Check username first
+  if (profile.username) {
+    // If username looks like an email, extract the part before @
+    if (profile.username.includes('@')) {
+      return profile.username.split('@')[0];
+    }
+    return profile.username;
+  }
+  
+  // Fallback to email
+  if (profile.email) {
+    return profile.email.split('@')[0];
+  }
+  
+  return 'Anonymous';
+};
 
 interface StyleCardProps {
   post: StylePost;
@@ -17,13 +38,13 @@ export function StyleCard({ post, onLikeUpdate }: StyleCardProps) {
   const [commentCount, setCommentCount] = useState(post.comment_count);
   const [isLiking, setIsLiking] = useState(false);
 
-  // post prop이 변경되면 state 업데이트 (다른 곳에서 변경된 경우)
+  // Update state when post prop changes (changed elsewhere)
   useEffect(() => {
     setLikeCount(post.like_count);
     setCommentCount(post.comment_count);
   }, [post.like_count, post.comment_count]);
 
-  // 초기 좋아요 상태 확인
+  // Check initial like status
   useEffect(() => {
     const checkLiked = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -38,35 +59,35 @@ export function StyleCard({ post, onLikeUpdate }: StyleCardProps) {
   const handleLike = useCallback(async (e: React.MouseEvent) => {
     e.stopPropagation();
     
-    if (isLiking) return; // 중복 클릭 방지
+    if (isLiking) return; // Prevent duplicate clicks
     
-    // 로그인 체크
+    // Login check
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      alert('좋아요를 누르려면 로그인이 필요합니다!');
+      alert('Please login to like!');
       navigate('/login');
       return;
     }
     
     setIsLiking(true);
     
-    // 낙관적 업데이트 (UI 먼저 변경)
+    // Optimistic update (change UI first)
     const newLiked = !liked;
     const newCount = newLiked ? likeCount + 1 : Math.max(0, likeCount - 1);
     setLiked(newLiked);
     setLikeCount(newCount);
     
     try {
-      // DB에 저장
+      // Save to DB
       const result = await togglePostLike(post.id, user.id);
       setLiked(result.liked);
       setLikeCount(result.likeCount);
       onLikeUpdate?.(post.id, result.likeCount);
     } catch (error) {
-      // 실패 시 롤백
+      // Rollback on failure
       setLiked(liked);
       setLikeCount(likeCount);
-      console.error('좋아요 처리 실패:', error);
+      console.error('Like failed:', error);
     } finally {
       setIsLiking(false);
     }
@@ -112,12 +133,12 @@ export function StyleCard({ post, onLikeUpdate }: StyleCardProps) {
             {post.profile?.avatar_url && (
               <img
                 src={post.profile.avatar_url}
-                alt={post.profile.username}
+                alt={post.profile.id || 'User'}
                 className="w-8 h-8 rounded-full border-2 border-white object-cover"
               />
             )}
             <span className="text-white text-sm font-semibold">
-              {post.profile?.username || 'Anonymous'}
+              {post.profile?.id || 'UnknownUser'}
             </span>
           </div>
         </div>
@@ -148,7 +169,7 @@ export function StyleCard({ post, onLikeUpdate }: StyleCardProps) {
         </div>
 
         {/* Engagement Stats */}
-        <div className="flex items-center justify-between text-xs text-gray-600 border-t pt-2">
+        <div className="flex items-center text-xs text-gray-600 border-t pt-2">
           <div className="flex items-center gap-3">
             <button 
               onClick={handleLike}
@@ -162,9 +183,6 @@ export function StyleCard({ post, onLikeUpdate }: StyleCardProps) {
               <span>{commentCount}</span>
             </button>
           </div>
-          <button className="hover:text-blue-500 transition-colors">
-            <Share2 className="w-4 h-4" />
-          </button>
         </div>
       </div>
     </div>

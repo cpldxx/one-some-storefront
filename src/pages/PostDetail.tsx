@@ -4,6 +4,27 @@ import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { Heart, MessageCircle, ArrowLeft, Send } from 'lucide-react';
 
+// Helper function to get display name
+const getDisplayName = (profile: any): string => {
+  if (!profile) return 'Anonymous';
+  
+  // Check username first
+  if (profile.username) {
+    // If username looks like an email, extract the part before @
+    if (profile.username.includes('@')) {
+      return profile.username.split('@')[0];
+    }
+    return profile.username;
+  }
+  
+  // Fallback to email
+  if (profile.email) {
+    return profile.email.split('@')[0];
+  }
+  
+  return 'Anonymous';
+};
+
 interface Post {
   id: string;
   user_id: string;
@@ -20,6 +41,7 @@ interface Post {
   created_at: string;
   profiles?: {
     username: string;
+    email?: string;
     avatar_url?: string;
   };
 }
@@ -30,11 +52,11 @@ export default function PostDetail() {
   const [loading, setLoading] = useState(true);
   const [comment, setComment] = useState('');
   const [comments, setComments] = useState<any[]>([]);
-  const [hasChanges, setHasChanges] = useState(false); // 변경사항 추적
+  const [hasChanges, setHasChanges] = useState(false); // Track changes
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  // 뒤로가기 핸들러 - 변경사항 있으면 캐시 무효화
+  // Go back handler - invalidate cache if changes exist
   const handleGoBack = () => {
     if (hasChanges) {
       queryClient.invalidateQueries({ queryKey: ['style-posts'] });
@@ -51,7 +73,7 @@ export default function PostDetail() {
     if (!postId) return;
     const { data, error } = await supabase
       .from('posts')
-      .select('*, profiles(username, avatar_url)')
+      .select('*, profiles(username, email, avatar_url)')
       .eq('id', postId)
       .single();
 
@@ -68,7 +90,7 @@ export default function PostDetail() {
     if (!postId) return;
     const { data, error } = await supabase
       .from('comments')
-      .select('*, profiles(username, avatar_url)')
+      .select('*, profiles(username, email, avatar_url)')
       .eq('post_id', postId)
       .order('created_at', { ascending: false });
 
@@ -81,12 +103,12 @@ export default function PostDetail() {
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      alert('댓글을 작성하려면 로그인이 필요합니다!');
+      alert('Please login to comment!');
       navigate('/login');
       return;
     }
 
-    // 유저 프로필 가져오기
+    // Get user profile
     const { data: userProfile } = await (supabase
       .from('profiles') as any)
       .select('username, avatar_url')
@@ -94,9 +116,9 @@ export default function PostDetail() {
       .single();
 
     const commentContent = comment;
-    setComment(''); // 입력창 먼저 비우기
+    setComment(''); // Clear input first
 
-    // 낙관적 업데이트: 바로 UI에 추가
+    // Optimistic update: add to UI immediately
     const tempComment = {
       id: `temp-${Date.now()}`,
       post_id: postId,
@@ -104,19 +126,19 @@ export default function PostDetail() {
       content: commentContent,
       created_at: new Date().toISOString(),
       profiles: {
-        username: userProfile?.username || user.email?.split('@')[0] || '나',
+        username: userProfile?.username || user.email?.split('@')[0] || 'Me',
         avatar_url: userProfile?.avatar_url || null,
       },
     };
     setComments(prev => [tempComment, ...prev]);
 
-    // comment_count 바로 업데이트 (로컬)
+    // Update comment_count locally
     const newCommentCount = (post?.comment_count || 0) + 1;
     if (post) {
       setPost({ ...post, comment_count: newCommentCount });
     }
 
-    // DB에 저장
+    // Save to DB
     const { data: insertedComment, error } = await (supabase
       .from('comments') as any)
       .insert({
@@ -128,35 +150,35 @@ export default function PostDetail() {
       .single();
 
     if (error) {
-            console.error('댓글 작성 실패:', error);
-      // 실패 시 롤백
+      console.error('Failed to post comment:', error);
+      // Rollback on failure
       setComments(prev => prev.filter(c => c.id !== tempComment.id));
       const rollbackCount = (post?.comment_count || 1);
       if (post) {
         setPost({ ...post, comment_count: rollbackCount });
       }
-      alert('댓글 작성 실패: ' + error.message);
+      alert('Failed to post comment: ' + error.message);
       return;
     }
 
-    // 임시 댓글을 실제 댓글로 교체
+    // Replace temporary comment with actual comment
     if (insertedComment) {
       setComments(prev => prev.map(c => 
         c.id === tempComment.id ? insertedComment : c
       ));
     }
 
-    // comment_count DB 업데이트
+    // Update comment_count in DB
     await (supabase.from('posts') as any)
       .update({ comment_count: newCommentCount })
       .eq('id', postId);
     
-    // 변경사항 표시 - 뒤로가기 시 캐시 무효화를 위해
+    // Mark changes - for cache invalidation on back navigation
     setHasChanges(true);
   };
 
-  if (loading) return <div className="p-10 text-center">로딩 중...</div>;
-  if (!post) return <div className="p-10 text-center">글을 찾을 수 없습니다.</div>;
+  if (loading) return <div className="p-10 text-center">Loading...</div>;
+  if (!post) return <div className="p-10 text-center">Post not found.</div>;
 
   return (
     <div className="min-h-screen bg-white pb-20">
@@ -164,7 +186,7 @@ export default function PostDetail() {
         <button onClick={handleGoBack} className="p-2 -ml-2">
           <ArrowLeft className="w-6 h-6" />
         </button>
-        <span className="font-bold ml-2">게시물</span>
+        <span className="font-bold ml-2">Post</span>
       </header>
 
       <div className="max-w-md mx-auto">
@@ -178,7 +200,7 @@ export default function PostDetail() {
                {post.profiles?.avatar_url && <img src={post.profiles.avatar_url} className="w-full h-full object-cover" />}
             </div>
             <div>
-              <p className="font-bold text-sm">{post.profiles?.username || '익명'}</p>
+              <p className="font-bold text-sm">{getDisplayName(post.profiles)}</p>
               <p className="text-xs text-gray-500">{new Date(post.created_at).toLocaleDateString()}</p>
             </div>
           </div>
@@ -197,10 +219,10 @@ export default function PostDetail() {
           </div>
 
           <div className="space-y-4 mb-20">
-            <h3 className="font-bold text-sm">댓글 {comments.length}개</h3>
+            <h3 className="font-bold text-sm">Comments ({comments.length})</h3>
             {comments.map((c) => (
               <div key={c.id} className="flex gap-3 text-sm">
-                 <div className="font-bold min-w-[3rem] truncate">{c.profiles?.username}</div>
+                 <div className="font-bold min-w-[3rem] truncate">{getDisplayName(c.profiles)}</div>
                  <div className="text-gray-700">{c.content}</div>
               </div>
             ))}
@@ -214,7 +236,7 @@ export default function PostDetail() {
             type="text"
             value={comment}
             onChange={(e) => setComment(e.target.value)}
-            placeholder="댓글 달기..."
+            placeholder="Add a comment..."
             className="flex-1 bg-gray-100 rounded-full px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-black/5"
           />
           <button type="submit" disabled={!comment.trim()} className="p-2.5 bg-black text-white rounded-full disabled:opacity-50 disabled:bg-gray-300">

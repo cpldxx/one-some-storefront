@@ -11,6 +11,7 @@ import LikesPage from "./pages/LikesPage";
 import MyPage from "./pages/MyPage";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
+import SignUp from "./pages/SignUp";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -37,6 +38,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<SignUp />} />
           <Route path="/community" element={<Community />} />
           <Route path="/community/:postId" element={<PostDetail />} />
           <Route path="/shop" element={<ShopPage />} />

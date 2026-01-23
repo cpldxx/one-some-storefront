@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Plus, Loader2 } from 'lucide-react';
+import { Plus, Loader2, CheckCircle, AlertCircle, X } from 'lucide-react';
 import { uploadImage } from '@/lib/upload';
 import { createPost } from '@/lib/community';
 import { PostTags } from '@/types/database';
@@ -48,6 +48,7 @@ export function UploadModal({ open: controlledOpen, onOpenChange }: UploadModalP
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const { register, handleSubmit, reset, control } = useForm<UploadFormData>({
     defaultValues: {
       description: '',
@@ -75,33 +76,33 @@ export function UploadModal({ open: controlledOpen, onOpenChange }: UploadModalP
 
   const onSubmit = async (data: UploadFormData) => {
     if (!imageFile) {
-      alert('Please select an image');
+      setMessage({ type: 'error', text: 'Please select an image to upload' });
       return;
     }
 
-    // 👇 여기를 이렇게 바꿔서 실제 유저 확인 👇
+    // Check if user is logged in
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-      alert("로그인이 필요합니다!");
-      // 로그인 페이지로 보내버리기
-      window.location.href = '/login';
+      setMessage({ type: 'error', text: 'Please login to create a post' });
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 1500);
       return;
     }
 
-    const userId = user.id; // 진짜 유저 ID 사용
-    // 👆 여기까지 수정 👆
-
+    const userId = user.id; // Use actual user ID
+    setMessage(null);
     setIsLoading(true);
     try {
       console.log('[UploadModal] Starting upload...');
       
-      // 1. R2에 이미지 업로드
+      // 1. Upload image to R2
       console.log('[UploadModal] Uploading image to R2...');
       const imageUrl = await uploadImage(imageFile);
       console.log('[UploadModal] Image uploaded:', imageUrl);
 
-      // 2. 태그 객체 생성 (FILTERS 기반 영문 태그)
+      // 2. Create tags object
       const tags: PostTags = {
         gender: data.gender ? [data.gender] : [],
         season: data.season ? [data.season] : [],
@@ -111,7 +112,7 @@ export function UploadModal({ open: controlledOpen, onOpenChange }: UploadModalP
       };
       console.log('[UploadModal] Tags:', tags);
 
-      // 3. Supabase에 포스트 생성
+      // 3. Create post in Supabase
       console.log('[UploadModal] Creating post in Supabase...');
       await createPost(
         {
@@ -123,18 +124,23 @@ export function UploadModal({ open: controlledOpen, onOpenChange }: UploadModalP
       );
       console.log('[UploadModal] Post created successfully!');
 
-      // 4. Query 재실행
+      // 4. Refetch queries
       queryClient.invalidateQueries({ queryKey: ['style-posts'] });
 
-      // 5. 모달 닫기 및 폼 초기화
-      setOpen(false);
-      reset();
-      setImageFile(null);
-      setImagePreview(null);
-      alert('Post created successfully!');
+      // 5. Show success message
+      setMessage({ type: 'success', text: 'Your outfit has been shared!' });
+      
+      // 6. Close modal and reset form after delay
+      setTimeout(() => {
+        setOpen(false);
+        reset();
+        setImageFile(null);
+        setImagePreview(null);
+        setMessage(null);
+      }, 1500);
     } catch (error) {
       console.error('[UploadModal] Upload error:', error);
-      alert('Failed to upload post. Please try again.');
+      setMessage({ type: 'error', text: 'Failed to upload. Please try again.' });
     } finally {
       setIsLoading(false);
     }
@@ -162,6 +168,37 @@ export function UploadModal({ open: controlledOpen, onOpenChange }: UploadModalP
             Share your outfit with the community. Add a photo, description, and tags.
           </DialogDescription>
         </DialogHeader>
+
+        {/* Success/Error Message */}
+        {message && (
+          <div className={`p-3 rounded-lg flex items-start gap-2 animate-in fade-in slide-in-from-top-2 duration-200 ${
+            message.type === 'success' 
+              ? 'bg-green-50 border border-green-200' 
+              : 'bg-red-50 border border-red-200'
+          }`}>
+            {message.type === 'success' ? (
+              <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+            ) : (
+              <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+            )}
+            <p className={`text-sm flex-1 ${
+              message.type === 'success' ? 'text-green-600' : 'text-red-600'
+            }`}>
+              {message.text}
+            </p>
+            <button 
+              type="button" 
+              onClick={() => setMessage(null)}
+              className={`transition-colors ${
+                message.type === 'success' 
+                  ? 'text-green-400 hover:text-green-600' 
+                  : 'text-red-400 hover:text-red-600'
+              }`}
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pb-4">
           {/* Image Upload */}

@@ -8,7 +8,8 @@ interface TrendingSectionProps {
 }
 
 export function TrendingSection({ posts }: TrendingSectionProps) {
-  const trendingPosts = posts.slice(8, 16); // 4x2 grid
+  // Already sorted by popularity (like_count) from API
+  const trendingPosts = posts.slice(0, 8); // Top 8 popular posts
 
   return (
     <section className="py-8 bg-gray-50">
@@ -16,7 +17,7 @@ export function TrendingSection({ posts }: TrendingSectionProps) {
         {/* Section Title */}
         <div className="mb-8">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-            🔥 Trending Now
+            Trending Now
           </h2>
           <p className="text-gray-600">Discover the hottest styles everyone is talking about</p>
         </div>
