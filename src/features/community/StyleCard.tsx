@@ -133,12 +133,12 @@ export function StyleCard({ post, onLikeUpdate }: StyleCardProps) {
             {post.profile?.avatar_url && (
               <img
                 src={post.profile.avatar_url}
-                alt={post.profile.id || 'User'}
+                alt={post.profile.username || 'User'}
                 className="w-8 h-8 rounded-full border-2 border-white object-cover"
               />
             )}
             <span className="text-white text-sm font-semibold">
-              {post.profile?.id || 'UnknownUser'}
+              {post.profile?.username || 'Anonymous'}
             </span>
           </div>
         </div>
