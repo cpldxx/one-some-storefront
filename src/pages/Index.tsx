@@ -5,6 +5,7 @@ import { AIPickSection } from '@/features/landing/AIPickSection';
 import { TrendingSection } from '@/features/landing/TrendingSection';
 import { ShopComingSoonSection } from '@/features/landing/ShopComingSoonSection';
 import { fetchStylePosts } from '@/lib/community';
+import HomeAiSection from "@/components/HomeAiSection";
 
 const Index = () => {
   // Latest posts for AI Picks
@@ -26,6 +27,7 @@ const Index = () => {
   return (
     <Layout>
       <HeroSection />
+      <HomeAiSection />
       <AIPickSection posts={latestPosts || []} />
       <TrendingSection posts={popularPosts || []} />
       <ShopComingSoonSection />

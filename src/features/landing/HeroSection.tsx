@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 const heroSlides = [
   {
     id: 1,
-    image: '/images/banner1.jpg',
+    image: '/banner1.jpg',
     badge: 'NEW SEASON',
     badgeColor: 'bg-lime-400 text-black',
     title: 'SEOUL VIBE',
@@ -21,7 +21,7 @@ const heroSlides = [
   },
   {
     id: 2,
-    image: '/images/banner2.jpg',
+    image: '/banner2.jpg',
     badge: 'BEST SELLER',
     badgeColor: 'bg-white text-black',
     title: 'GORPCORE',
@@ -31,7 +31,7 @@ const heroSlides = [
   },
   {
     id: 3,
-    image: '/images/banner3.jpg',
+    image: '/banner3.jpg',
     badge: 'LIMITED',
     badgeColor: 'bg-red-500 text-white',
     title: 'CITY BOY',
@@ -41,7 +41,7 @@ const heroSlides = [
   },
   {
     id: 4,
-    image: '/images/banner4.jpg',
+    image: '/banner4.jpg',
     badge: 'TRENDING',
     badgeColor: 'bg-orange-500 text-white',
     title: 'STREET SNAP',
@@ -51,7 +51,7 @@ const heroSlides = [
   },
   {
     id: 5,
-    image: '/images/banner5.jpg',
+    image: '/banner5.jpg',
     badge: 'NEW DROP',
     badgeColor: 'bg-purple-500 text-white',
     title: 'AMEKAJI',

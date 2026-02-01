@@ -27,15 +27,24 @@ export async function fetchStylePosts(
   sortBy: 'popular' | 'latest' = 'latest'
 ): Promise<StylePost[]> {
   try {
-    let query = supabase
-      .from('posts')
-      .select(
-        `
+    // Check if user is authenticated
+    const { data: { user } } = await supabase.auth.getUser();
+
+    // Only fetch likes if user is authenticated
+    const selectQuery = user
+      ? `
         *,
         profile:user_id(id, email, username, avatar_url, bio),
         likes(user_id)
       `
-      );
+      : `
+        *,
+        profile:user_id(id, email, username, avatar_url, bio)
+      `;
+
+    let query = supabase
+      .from('posts')
+      .select(selectQuery);
 
     // Apply sorting
     if (sortBy === 'popular') {
@@ -62,11 +71,16 @@ export async function fetchStylePosts(
     }
 
     // Transform response data
-    let posts: StylePost[] = (data || []).map((post: any) => ({
-      ...post,
-      profile: post.profile,
-      is_liked: (post.likes || []).length > 0,
-    }));
+    let posts: StylePost[] = (data || []).map((post: any) => {
+      // Only check likes if user is authenticated and likes data exists
+      const hasLikes = user && post.likes && (post.likes || []).length > 0;
+
+      return {
+        ...post,
+        profile: post.profile,
+        is_liked: hasLikes,
+      };
+    });
 
     // Client-side filtering (JSONB OR conditions are complex)
     const hasActiveFilters = filters && (
