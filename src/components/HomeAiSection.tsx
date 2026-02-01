@@ -34,17 +34,32 @@ export default function HomeAiSection() {
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         try {
+          console.log('[AI Stylist] Calling function with:', { lat: pos.coords.latitude, lon: pos.coords.longitude, profile });
+
+          // Get current session token
+          const { data: { session } } = await supabase.auth.getSession();
+          console.log('[AI Stylist] Session:', session ? 'Valid' : 'None');
+
           const { data, error } = await supabase.functions.invoke("ai-stylist", {
             body: {
               lat: pos.coords.latitude,
               lon: pos.coords.longitude,
               profile,
             },
+            headers: session ? {
+              Authorization: `Bearer ${session.access_token}`,
+            } : undefined,
           });
-          if (error) setError(error.message);
-          else setResult(data);
+          console.log('[AI Stylist] Response:', { data, error });
+          if (error) {
+            console.error('[AI Stylist] Error:', error);
+            setError(`Error: ${error.message || 'Unknown error'}`);
+          } else {
+            setResult(data);
+          }
         } catch (e: any) {
-          setError("AI Stylist failed. Please try again.");
+          console.error('[AI Stylist] Exception:', e);
+          setError(`AI Stylist failed: ${e.message || 'Please try again.'}`);
         }
         setLoading(false);
       },

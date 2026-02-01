@@ -3,7 +3,7 @@ import { StylePost } from '@/types/database';
 import { useCallback, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
-import { togglePostLike, checkUserLiked } from '@/lib/community';
+import { togglePostLike } from '@/lib/community';
 
 // Helper function to get display name from profile
 const getDisplayName = (profile: any): string => {
@@ -33,28 +33,17 @@ interface StyleCardProps {
 
 export function StyleCard({ post, onLikeUpdate }: StyleCardProps) {
   const navigate = useNavigate();
-  const [liked, setLiked] = useState(false);
+  const [liked, setLiked] = useState(post.is_liked || false);
   const [likeCount, setLikeCount] = useState(post.like_count);
   const [commentCount, setCommentCount] = useState(post.comment_count);
   const [isLiking, setIsLiking] = useState(false);
 
   // Update state when post prop changes (changed elsewhere)
   useEffect(() => {
+    setLiked(post.is_liked || false);
     setLikeCount(post.like_count);
     setCommentCount(post.comment_count);
-  }, [post.like_count, post.comment_count]);
-
-  // Check initial like status
-  useEffect(() => {
-    const checkLiked = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const isLiked = await checkUserLiked(post.id, user.id);
-        setLiked(isLiked);
-      }
-    };
-    checkLiked();
-  }, [post.id]);
+  }, [post.is_liked, post.like_count, post.comment_count]);
 
   const handleLike = useCallback(async (e: React.MouseEvent) => {
     e.stopPropagation();

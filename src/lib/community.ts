@@ -30,21 +30,13 @@ export async function fetchStylePosts(
     // Check if user is authenticated
     const { data: { user } } = await supabase.auth.getUser();
 
-    // Only fetch likes if user is authenticated
-    const selectQuery = user
-      ? `
-        *,
-        profile:user_id(id, email, username, avatar_url, bio),
-        likes(user_id)
-      `
-      : `
-        *,
-        profile:user_id(id, email, username, avatar_url, bio)
-      `;
-
+    // Fetch posts with profile info (no likes in query to avoid RLS issues)
     let query = supabase
       .from('posts')
-      .select(selectQuery);
+      .select(`
+        *,
+        profile:user_id(id, email, username, avatar_url, bio)
+      `);
 
     // Apply sorting
     if (sortBy === 'popular') {
@@ -70,17 +62,39 @@ export async function fetchStylePosts(
       throw error;
     }
 
-    // Transform response data
-    let posts: StylePost[] = (data || []).map((post: any) => {
-      // Only check likes if user is authenticated and likes data exists
-      const hasLikes = user && post.likes && (post.likes || []).length > 0;
+    // Transform response data and fetch likes separately if user is authenticated
+    let posts: StylePost[] = (data || []).map((post: any) => ({
+      ...post,
+      profile: post.profile,
+      is_liked: false, // Will be updated below if user is authenticated
+    }));
 
-      return {
-        ...post,
-        profile: post.profile,
-        is_liked: hasLikes,
-      };
-    });
+    // If user is authenticated, fetch their likes for these posts
+    if (user && posts.length > 0) {
+      const postIds = posts.map(p => p.id);
+
+      try {
+        const { data: userLikes, error: likesError } = await (supabase
+          .from('likes')
+          .select('post_id')
+          .eq('user_id', user.id)
+          .in('post_id', postIds) as any);
+
+        if (likesError) {
+          console.error('[Community] Error fetching likes:', likesError);
+          // Continue without likes data rather than failing
+        } else if (userLikes && Array.isArray(userLikes)) {
+          const likedPostIds = new Set(userLikes.map((like: any) => like.post_id));
+          posts = posts.map(post => ({
+            ...post,
+            is_liked: likedPostIds.has(post.id),
+          }));
+        }
+      } catch (error) {
+        console.error('[Community] Exception fetching likes:', error);
+        // Continue without likes data
+      }
+    }
 
     // Client-side filtering (JSONB OR conditions are complex)
     const hasActiveFilters = filters && (
