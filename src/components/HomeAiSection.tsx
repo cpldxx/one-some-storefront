@@ -5,6 +5,7 @@ export default function HomeAiSection() {
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [imageLoading, setImageLoading] = useState(false);
   const [result, setResult] = useState<{ image: string; reasoning: string; weather: any } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,25 +37,40 @@ export default function HomeAiSection() {
         try {
           console.log('[AI Stylist] Calling function with:', { lat: pos.coords.latitude, lon: pos.coords.longitude, profile });
 
-          // Get current session token
-          const { data: { session } } = await supabase.auth.getSession();
-          console.log('[AI Stylist] Session:', session ? 'Valid' : 'None');
+          // Direct fetch to bypass Supabase client JWT enforcement
+          const functionUrl = 'https://mdbjlufzfstekqgjceuq.supabase.co/functions/v1/ai-stylist';
 
-          const { data, error } = await supabase.functions.invoke("ai-stylist", {
-            body: {
+          const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+          const response = await fetch(functionUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': anonKey,
+              'Authorization': `Bearer ${anonKey}`,
+            },
+            body: JSON.stringify({
               lat: pos.coords.latitude,
               lon: pos.coords.longitude,
               profile,
-            },
-            headers: session ? {
-              Authorization: `Bearer ${session.access_token}`,
-            } : undefined,
+            }),
           });
-          console.log('[AI Stylist] Response:', { data, error });
-          if (error) {
-            console.error('[AI Stylist] Error:', error);
-            setError(`Error: ${error.message || 'Unknown error'}`);
+
+          console.log('[AI Stylist] Response status:', response.status);
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error('[AI Stylist] Error response:', errorText);
+            throw new Error(`HTTP ${response.status}: ${errorText}`);
+          }
+
+          const data = await response.json();
+          console.log('[AI Stylist] Response data:', data);
+
+          if (data.error) {
+            setError(`Error: ${data.error}`);
           } else {
+            setImageLoading(true);
             setResult(data);
           }
         } catch (e: any) {
@@ -103,16 +119,32 @@ export default function HomeAiSection() {
           )}
         </div>
         {/* Right: Image */}
-        <div className="flex-1 flex items-center justify-center min-h-[320px]">
+        <div className="flex-1 flex items-center justify-center min-h-[500px] relative">
           {result?.image ? (
-            <img
-              src={`data:image/png;base64,${result.image}`}
-              alt="AI Stylist Result"
-              className="rounded-xl shadow-2xl max-w-full max-h-[400px] object-contain"
-            />
+            <>
+              {imageLoading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-white/5 rounded-xl border border-white/10">
+                  <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+                    <p className="text-gray-400">이미지 생성 중...</p>
+                  </div>
+                </div>
+              )}
+              <img
+                src={result.image}
+                alt="AI Stylist Result"
+                className="rounded-xl shadow-2xl max-w-full max-h-[600px] object-contain"
+                onLoad={() => setImageLoading(false)}
+                onError={() => {
+                  setImageLoading(false);
+                  setError('이미지 로드 실패');
+                }}
+                style={{ display: imageLoading ? 'none' : 'block' }}
+              />
+            </>
           ) : (
-            <div className="w-full h-[320px] flex items-center justify-center bg-white/5 rounded-xl border border-white/10 text-gray-500 text-xl">
-              {loading ? "Generating image..." : "Your AI look will appear here"}
+            <div className="w-full h-[500px] flex items-center justify-center bg-white/5 rounded-xl border border-white/10 text-gray-500 text-xl">
+              {loading ? "Analyzing..." : "Your AI look will appear here"}
             </div>
           )}
         </div>
