@@ -30,11 +30,13 @@ const queryClient = new QueryClient({
   },
 });
 
+const basename = import.meta.env.PROD ? "/one-some-storefront/" : "/";
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster position="top-center" />
-      <BrowserRouter basename="/one-some-storefront/">
+      <BrowserRouter basename={basename}>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
