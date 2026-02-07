@@ -35,7 +35,8 @@ export async function fetchStylePosts(
       .from('posts')
       .select(`
         *,
-        profile:user_id(id, email, username, avatar_url, bio)
+        profile:user_id(id, email, username, avatar_url, bio),
+        comments(count)
       `);
 
     // Apply sorting
@@ -63,11 +64,16 @@ export async function fetchStylePosts(
     }
 
     // Transform response data and fetch likes separately if user is authenticated
-    let posts: StylePost[] = (data || []).map((post: any) => ({
-      ...post,
-      profile: post.profile,
-      is_liked: false, // Will be updated below if user is authenticated
-    }));
+    let posts: StylePost[] = (data || []).map((post: any) => {
+      // Get actual comment count from the joined comments table
+      const actualCommentCount = post.comments?.[0]?.count ?? post.comment_count ?? 0;
+      return {
+        ...post,
+        profile: post.profile,
+        comment_count: actualCommentCount, // Use actual count from DB
+        is_liked: false, // Will be updated below if user is authenticated
+      };
+    });
 
     // If user is authenticated, fetch their likes for these posts
     if (user && posts.length > 0) {
