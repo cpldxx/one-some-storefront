@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { togglePostLike } from '@/lib/community';
-import { Heart, MessageCircle, ArrowLeft, Send, ChevronDown, ChevronUp, Reply } from 'lucide-react';
+import { Heart, MessageCircle, ArrowLeft, Send } from 'lucide-react';
 
 // Helper function to get display name
 const getDisplayName = (profile: any): string => {
@@ -399,26 +399,28 @@ export default function PostDetail() {
           <div className="space-y-4 mb-20">
             <h3 className="font-bold text-sm">Comments ({comments.reduce((acc, c) => acc + 1 + (c.replies?.length || 0), 0)})</h3>
             {comments.map((c) => (
-              <div key={c.id} className="border-b border-gray-100 pb-4">
+              <div key={c.id} className="pb-4">
                 {/* Parent Comment */}
-                <div className="flex gap-3 text-sm">
+                <div className="flex gap-3">
                   <div className="w-8 h-8 bg-gray-200 rounded-full overflow-hidden flex-shrink-0">
                     {c.profiles?.avatar_url && <img src={c.profiles.avatar_url} className="w-full h-full object-cover" />}
                   </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold">{getDisplayName(c.profiles)}</span>
-                      <span className="text-xs text-gray-400">{new Date(c.created_at).toLocaleDateString()}</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm">
+                      <span className="font-semibold">{getDisplayName(c.profiles)}</span>{' '}
+                      <span className="text-gray-800">{c.content}</span>
+                    </p>
+                    <div className="flex items-center gap-4 mt-1 text-xs text-gray-500">
+                      <span>{new Date(c.created_at).toLocaleDateString()}</span>
+                      <button 
+                        onClick={() => setReplyingTo(replyingTo === c.id ? null : c.id)}
+                        className="font-semibold hover:text-gray-700"
+                      >
+                        Reply
+                      </button>
                     </div>
-                    <p className="text-gray-700 mt-1">{c.content}</p>
-                    <button 
-                      onClick={() => setReplyingTo(replyingTo === c.id ? null : c.id)}
-                      className="text-xs text-gray-500 mt-2 flex items-center gap-1 hover:text-black"
-                    >
-                      <Reply className="w-3 h-3" /> Reply
-                    </button>
                     
-                    {/* Reply Input */}
+                    {/* Reply Input - Instagram style */}
                     {replyingTo === c.id && (
                       <form 
                         onSubmit={async (e) => {
@@ -453,60 +455,85 @@ export default function PostDetail() {
                           fetchComments();
                           setHasChanges(true);
                         }}
-                        className="flex gap-2 mt-2"
+                        className="flex gap-2 mt-3"
                       >
                         <input
                           type="text"
-                          placeholder="Write a reply..."
-                          className="flex-1 bg-gray-100 rounded-full px-3 py-1.5 text-xs outline-none"
+                          placeholder={`Reply to ${getDisplayName(c.profiles)}...`}
+                          className="flex-1 border-b border-gray-300 py-1 text-sm outline-none focus:border-gray-500"
                           autoFocus
                         />
-                        <button type="submit" className="text-xs bg-black text-white px-3 py-1.5 rounded-full">
-                          Reply
+                        <button type="submit" className="text-sm text-blue-500 font-semibold">
+                          Post
                         </button>
                       </form>
                     )}
-                  </div>
-                </div>
-                
-                {/* Replies */}
-                {c.replies && c.replies.length > 0 && (
-                  <div className="ml-11 mt-3">
-                    <button 
-                      onClick={() => toggleReplies(c.id)}
-                      className="text-xs text-blue-600 flex items-center gap-1 mb-2"
-                    >
-                      {expandedReplies.has(c.id) ? (
-                        <>
-                          <ChevronUp className="w-3 h-3" /> Hide {c.replies.length} {c.replies.length === 1 ? 'reply' : 'replies'}
-                        </>
-                      ) : (
-                        <>
-                          <ChevronDown className="w-3 h-3" /> View {c.replies.length} {c.replies.length === 1 ? 'reply' : 'replies'}
-                        </>
-                      )}
-                    </button>
                     
-                    {expandedReplies.has(c.id) && (
-                      <div className="space-y-3 border-l-2 border-gray-200 pl-3">
-                        {c.replies.map((reply) => (
-                          <div key={reply.id} className="flex gap-2 text-sm">
-                            <div className="w-6 h-6 bg-gray-200 rounded-full overflow-hidden flex-shrink-0">
-                              {reply.profiles?.avatar_url && <img src={reply.profiles.avatar_url} className="w-full h-full object-cover" />}
-                            </div>
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2">
-                                <span className="font-bold text-xs">{getDisplayName(reply.profiles)}</span>
-                                <span className="text-xs text-gray-400">{new Date(reply.created_at).toLocaleDateString()}</span>
+                    {/* Replies - Instagram style (always visible, indented) */}
+                    {c.replies && c.replies.length > 0 && (
+                      <div className="mt-3 space-y-3">
+                        {!expandedReplies.has(c.id) && c.replies.length > 2 ? (
+                          <>
+                            {/* Show "View all X replies" if more than 2 */}
+                            <button 
+                              onClick={() => toggleReplies(c.id)}
+                              className="text-xs text-gray-500 font-semibold flex items-center gap-2"
+                            >
+                              <span className="w-6 h-px bg-gray-300"></span>
+                              View all {c.replies.length} replies
+                            </button>
+                            {/* Show last 2 replies */}
+                            {c.replies.slice(-2).map((reply) => (
+                              <div key={reply.id} className="flex gap-3 ml-0">
+                                <div className="w-6 h-6 bg-gray-200 rounded-full overflow-hidden flex-shrink-0">
+                                  {reply.profiles?.avatar_url && <img src={reply.profiles.avatar_url} className="w-full h-full object-cover" />}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm">
+                                    <span className="font-semibold">{getDisplayName(reply.profiles)}</span>{' '}
+                                    <span className="text-gray-800">{reply.content}</span>
+                                  </p>
+                                  <div className="flex items-center gap-4 mt-1 text-xs text-gray-500">
+                                    <span>{new Date(reply.created_at).toLocaleDateString()}</span>
+                                  </div>
+                                </div>
                               </div>
-                              <p className="text-gray-700 text-xs mt-0.5">{reply.content}</p>
-                            </div>
-                          </div>
-                        ))}
+                            ))}
+                          </>
+                        ) : (
+                          <>
+                            {/* Show all replies or collapse button */}
+                            {expandedReplies.has(c.id) && c.replies.length > 2 && (
+                              <button 
+                                onClick={() => toggleReplies(c.id)}
+                                className="text-xs text-gray-500 font-semibold flex items-center gap-2"
+                              >
+                                <span className="w-6 h-px bg-gray-300"></span>
+                                Hide replies
+                              </button>
+                            )}
+                            {c.replies.map((reply) => (
+                              <div key={reply.id} className="flex gap-3 ml-0">
+                                <div className="w-6 h-6 bg-gray-200 rounded-full overflow-hidden flex-shrink-0">
+                                  {reply.profiles?.avatar_url && <img src={reply.profiles.avatar_url} className="w-full h-full object-cover" />}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm">
+                                    <span className="font-semibold">{getDisplayName(reply.profiles)}</span>{' '}
+                                    <span className="text-gray-800">{reply.content}</span>
+                                  </p>
+                                  <div className="flex items-center gap-4 mt-1 text-xs text-gray-500">
+                                    <span>{new Date(reply.created_at).toLocaleDateString()}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </>
+                        )}
                       </div>
                     )}
                   </div>
-                )}
+                </div>
               </div>
             ))}
           </div>
