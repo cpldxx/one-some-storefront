@@ -173,6 +173,21 @@ export default function PostDetail() {
       .update({ comment_count: newCommentCount })
       .eq('id', postId);
     
+    // Update React Query cache immediately
+    queryClient.setQueriesData({ queryKey: ['style-posts'] }, (oldData: any) => {
+      if (!oldData?.pages) return oldData;
+      return {
+        ...oldData,
+        pages: oldData.pages.map((page: any[]) =>
+          page.map((p: any) =>
+            p.id === postId
+              ? { ...p, comment_count: newCommentCount }
+              : p
+          )
+        ),
+      };
+    });
+    
     // Mark changes - for cache invalidation on back navigation
     setHasChanges(true);
   };

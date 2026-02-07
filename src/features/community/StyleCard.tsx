@@ -2,6 +2,7 @@ import { Heart, MessageCircle } from 'lucide-react';
 import { StylePost } from '@/types/database';
 import { useCallback, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { togglePostLike } from '@/lib/community';
 
@@ -33,6 +34,7 @@ interface StyleCardProps {
 
 export function StyleCard({ post, onLikeUpdate }: StyleCardProps) {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [liked, setLiked] = useState(post.is_liked || false);
   const [likeCount, setLikeCount] = useState(post.like_count);
   const [commentCount, setCommentCount] = useState(post.comment_count);
@@ -66,21 +68,68 @@ export function StyleCard({ post, onLikeUpdate }: StyleCardProps) {
     setLiked(newLiked);
     setLikeCount(newCount);
     
+    // Update React Query cache immediately for all queries
+    queryClient.setQueriesData({ queryKey: ['style-posts'] }, (oldData: any) => {
+      if (!oldData?.pages) return oldData;
+      return {
+        ...oldData,
+        pages: oldData.pages.map((page: StylePost[]) =>
+          page.map((p: StylePost) =>
+            p.id === post.id
+              ? { ...p, is_liked: newLiked, like_count: newCount }
+              : p
+          )
+        ),
+      };
+    });
+    
     try {
       // Save to DB
       const result = await togglePostLike(post.id, user.id);
       setLiked(result.liked);
       setLikeCount(result.likeCount);
+      
+      // Update cache with actual values from DB
+      queryClient.setQueriesData({ queryKey: ['style-posts'] }, (oldData: any) => {
+        if (!oldData?.pages) return oldData;
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page: StylePost[]) =>
+            page.map((p: StylePost) =>
+              p.id === post.id
+                ? { ...p, is_liked: result.liked, like_count: result.likeCount }
+                : p
+            )
+          ),
+        };
+      });
+      
       onLikeUpdate?.(post.id, result.likeCount);
     } catch (error) {
       // Rollback on failure
       setLiked(liked);
       setLikeCount(likeCount);
+      
+      // Rollback cache
+      queryClient.setQueriesData({ queryKey: ['style-posts'] }, (oldData: any) => {
+        if (!oldData?.pages) return oldData;
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page: StylePost[]) =>
+            page.map((p: StylePost) =>
+              p.id === post.id
+                ? { ...p, is_liked: liked, like_count: likeCount }
+                : p
+            )
+          ),
+        };
+      });
+      
       console.error('Like failed:', error);
     } finally {
       setIsLiking(false);
     }
-  }, [post.id, liked, likeCount, isLiking, navigate, onLikeUpdate]);
+  }, [post.id, liked, likeCount, isLiking, navigate, onLikeUpdate, queryClient]);
 
   const handleCardClick = () => {
     navigate(`/community/${post.id}`);

@@ -30,7 +30,7 @@ const queryClient = new QueryClient({
   },
 });
 
-const basename = import.meta.env.PROD ? "/one-some-storefront/" : "/";
+const basename = "/";
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
