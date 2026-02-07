@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, Save, User, Lock, Ruler, Weight, Palette } from 'lucide-react';
+import { ArrowLeft, Save } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Layout } from '@/features/layout/Layout';
 import { supabase } from '@/lib/supabase';
@@ -171,7 +171,7 @@ export default function Settings() {
               activeSection === 'profile' ? 'border-b-2 border-black' : 'text-gray-400'
             }`}
           >
-            <User className="w-4 h-4 inline mr-1" /> Profile
+            Profile
           </button>
           <button
             onClick={() => setActiveSection('body')}
@@ -179,7 +179,7 @@ export default function Settings() {
               activeSection === 'body' ? 'border-b-2 border-black' : 'text-gray-400'
             }`}
           >
-            <Ruler className="w-4 h-4 inline mr-1" /> Body
+            Body
           </button>
           <button
             onClick={() => setActiveSection('style')}
@@ -187,7 +187,7 @@ export default function Settings() {
               activeSection === 'style' ? 'border-b-2 border-black' : 'text-gray-400'
             }`}
           >
-            <Palette className="w-4 h-4 inline mr-1" /> Style
+            Style
           </button>
           <button
             onClick={() => setActiveSection('password')}
@@ -195,7 +195,7 @@ export default function Settings() {
               activeSection === 'password' ? 'border-b-2 border-black' : 'text-gray-400'
             }`}
           >
-            <Lock className="w-4 h-4 inline mr-1" /> Password
+            Password
           </button>
         </div>
 

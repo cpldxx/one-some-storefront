@@ -463,7 +463,7 @@ export default function PostDetail() {
                           className="flex-1 border-b border-gray-300 py-1 text-sm outline-none focus:border-gray-500"
                           autoFocus
                         />
-                        <button type="submit" className="text-sm text-blue-500 font-semibold">
+                        <button type="submit" className="text-sm text-black font-semibold">
                           Post
                         </button>
                       </form>
