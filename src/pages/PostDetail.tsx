@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
+import { togglePostLike } from '@/lib/community';
 import { Heart, MessageCircle, ArrowLeft, Send } from 'lucide-react';
 
 // Helper function to get display name
@@ -53,6 +54,9 @@ export default function PostDetail() {
   const [comment, setComment] = useState('');
   const [comments, setComments] = useState<any[]>([]);
   const [hasChanges, setHasChanges] = useState(false); // Track changes
+  const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
+  const [isLiking, setIsLiking] = useState(false);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -77,12 +81,28 @@ export default function PostDetail() {
       .eq('id', postId)
       .single();
 
-    if (error) {
+    if (error || !data) {
       console.error('Error fetching post:', error);
       navigate('/community');
       return;
     }
-    setPost(data);
+    
+    const postData = data as Post;
+    setPost(postData);
+    setLikeCount(postData.like_count || 0);
+    
+    // Check if current user liked this post
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const { data: existingLike } = await supabase
+        .from('likes')
+        .select('id')
+        .eq('post_id', postId)
+        .eq('user_id', user.id)
+        .single();
+      setLiked(!!existingLike);
+    }
+    
     setLoading(false);
   };
 
@@ -94,7 +114,87 @@ export default function PostDetail() {
       .eq('post_id', postId)
       .order('created_at', { ascending: false });
 
-    if (!error) setComments(data || []);
+    if (!error && data) {
+      setComments(data);
+      
+      // DB의 comment_count와 실제 댓글 수가 다르면 동기화
+      if (post && post.comment_count !== data.length) {
+        await (supabase.from('posts') as any)
+          .update({ comment_count: data.length })
+          .eq('id', postId);
+        setPost({ ...post, comment_count: data.length });
+      }
+    }
+  };
+
+  const handleLike = async () => {
+    if (isLiking) return;
+    
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      alert('Please login to like!');
+      navigate('/login');
+      return;
+    }
+    
+    setIsLiking(true);
+    
+    // Optimistic update
+    const newLiked = !liked;
+    const newCount = newLiked ? likeCount + 1 : Math.max(0, likeCount - 1);
+    setLiked(newLiked);
+    setLikeCount(newCount);
+    if (post) {
+      setPost({ ...post, like_count: newCount });
+    }
+    
+    // Update React Query cache
+    queryClient.setQueriesData({ queryKey: ['style-posts'] }, (oldData: any) => {
+      if (!oldData?.pages) return oldData;
+      return {
+        ...oldData,
+        pages: oldData.pages.map((page: any[]) =>
+          page.map((p: any) =>
+            p.id === postId
+              ? { ...p, is_liked: newLiked, like_count: newCount }
+              : p
+          )
+        ),
+      };
+    });
+    
+    try {
+      const result = await togglePostLike(postId!, user.id);
+      setLiked(result.liked);
+      setLikeCount(result.likeCount);
+      if (post) {
+        setPost({ ...post, like_count: result.likeCount });
+      }
+      
+      // Update cache with actual DB values
+      queryClient.setQueriesData({ queryKey: ['style-posts'] }, (oldData: any) => {
+        if (!oldData?.pages) return oldData;
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page: any[]) =>
+            page.map((p: any) =>
+              p.id === postId
+                ? { ...p, is_liked: result.liked, like_count: result.likeCount }
+                : p
+            )
+          ),
+        };
+      });
+      
+      setHasChanges(true);
+    } catch (error) {
+      // Rollback
+      setLiked(liked);
+      setLikeCount(likeCount);
+      console.error('Like failed:', error);
+    } finally {
+      setIsLiking(false);
+    }
   };
 
   const handleAddComment = async (e: React.FormEvent) => {
@@ -229,8 +329,15 @@ export default function PostDetail() {
           </div>
 
           <div className="flex gap-4 text-sm text-gray-600 border-t border-gray-100 pt-4 mb-6">
-            <div className="flex items-center gap-1"><Heart className="w-4 h-4" /> {post.like_count}</div>
-            <div className="flex items-center gap-1"><MessageCircle className="w-4 h-4" /> {post.comment_count}</div>
+            <button 
+              onClick={handleLike}
+              disabled={isLiking}
+              className={`flex items-center gap-1 transition-colors ${liked ? 'text-red-500' : 'hover:text-red-500'}`}
+            >
+              <Heart className={`w-5 h-5 ${liked ? 'fill-red-500' : ''}`} /> 
+              {likeCount}
+            </button>
+            <div className="flex items-center gap-1"><MessageCircle className="w-5 h-5" /> {comments.length}</div>
           </div>
 
           <div className="space-y-4 mb-20">
