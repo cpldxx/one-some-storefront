@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { User, Grid3X3, Heart, Settings, LogOut, Camera } from 'lucide-react';
+import { User, Grid3X3, Heart, Settings, LogOut, Camera, Trash2, X } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Layout } from '@/features/layout/Layout';
 import { supabase } from '@/lib/supabase';
@@ -84,6 +84,32 @@ export default function MyPage() {
     }
     
     setLoading(false);
+  };
+
+  const handleDeletePost = async (postId: string) => {
+    if (!confirm('Are you sure you want to delete this post?')) return;
+    
+    try {
+      // Delete related likes first
+      await (supabase.from('likes').delete().eq('post_id', postId) as any);
+      
+      // Delete related comments
+      await (supabase.from('comments').delete().eq('post_id', postId) as any);
+      
+      // Delete the post
+      const { error } = await (supabase.from('posts').delete().eq('id', postId) as any);
+      
+      if (error) throw error;
+      
+      // Update local state
+      setMyPosts(prev => prev.filter(p => p.id !== postId));
+      setLikedPosts(prev => prev.filter(p => p.id !== postId));
+      
+      alert('Post deleted successfully.');
+    } catch (error) {
+      console.error('Delete failed:', error);
+      alert('Failed to delete post.');
+    }
   };
 
   const handleLogout = async () => {
@@ -216,23 +242,37 @@ export default function MyPage() {
         {currentPosts.length > 0 ? (
           <div className="grid grid-cols-3 gap-0.5">
             {currentPosts.map((post) => (
-              <Link
+              <div
                 key={post.id}
-                to={`/community/${post.id}`}
                 className="aspect-square bg-gray-100 relative group"
               >
-                <img
-                  src={encodeURI(post.image_url)}
-                  alt="Post"
-                  className="w-full h-full object-cover"
-                />
+                <Link to={`/community/${post.id}`}>
+                  <img
+                    src={encodeURI(post.image_url)}
+                    alt="Post"
+                    className="w-full h-full object-cover"
+                  />
+                </Link>
                 {/* Hover overlay */}
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 text-white text-sm">
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 text-white text-sm pointer-events-none">
                   <span className="flex items-center gap-1">
                     <Heart className="w-4 h-4 fill-white" /> {post.like_count}
                   </span>
                 </div>
-              </Link>
+                {/* Delete button - only show on my posts tab */}
+                {activeTab === 'posts' && (
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleDeletePost(post.id);
+                    }}
+                    className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600 z-10"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
             ))}
           </div>
         ) : (
