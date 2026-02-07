@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { togglePostLike } from '@/lib/community';
-import { Heart, MessageCircle, ArrowLeft, Send } from 'lucide-react';
+import { Heart, MessageCircle, ArrowLeft, Send, ChevronDown, ChevronUp, Reply } from 'lucide-react';
 
 // Helper function to get display name
 const getDisplayName = (profile: any): string => {
@@ -25,6 +25,21 @@ const getDisplayName = (profile: any): string => {
   
   return 'Anonymous';
 };
+
+interface Comment {
+  id: string;
+  post_id: string;
+  user_id: string;
+  content: string;
+  parent_id: string | null;
+  created_at: string;
+  profiles?: {
+    username: string;
+    email?: string;
+    avatar_url?: string;
+  };
+  replies?: Comment[];
+}
 
 interface Post {
   id: string;
@@ -52,11 +67,13 @@ export default function PostDetail() {
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
   const [comment, setComment] = useState('');
-  const [comments, setComments] = useState<any[]>([]);
-  const [hasChanges, setHasChanges] = useState(false); // Track changes
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [hasChanges, setHasChanges] = useState(false);
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [isLiking, setIsLiking] = useState(false);
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const [expandedReplies, setExpandedReplies] = useState<Set<string>>(new Set());
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -108,14 +125,39 @@ export default function PostDetail() {
 
   const fetchComments = async () => {
     if (!postId) return;
-    const { data, error } = await supabase
+    const { data, error } = await (supabase
       .from('comments')
       .select('*, profiles(username, email, avatar_url)')
       .eq('post_id', postId)
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: true }) as any);
 
     if (!error && data) {
-      setComments(data);
+      // Organize comments into threads (parent comments with replies)
+      const parentComments: Comment[] = [];
+      const repliesMap: Map<string, Comment[]> = new Map();
+      
+      data.forEach((c: Comment) => {
+        if (c.parent_id) {
+          // This is a reply
+          const existing = repliesMap.get(c.parent_id) || [];
+          existing.push(c);
+          repliesMap.set(c.parent_id, existing);
+        } else {
+          // This is a parent comment
+          parentComments.push(c);
+        }
+      });
+      
+      // Attach replies to parent comments
+      const threaded = parentComments.map(parent => ({
+        ...parent,
+        replies: repliesMap.get(parent.id) || []
+      }));
+      
+      // Sort: newest first
+      threaded.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      
+      setComments(threaded);
       
       // DB의 comment_count와 실제 댓글 수가 다르면 동기화
       if (post && post.comment_count !== data.length) {
@@ -125,6 +167,18 @@ export default function PostDetail() {
         setPost({ ...post, comment_count: data.length });
       }
     }
+  };
+
+  const toggleReplies = (commentId: string) => {
+    setExpandedReplies(prev => {
+      const next = new Set(prev);
+      if (next.has(commentId)) {
+        next.delete(commentId);
+      } else {
+        next.add(commentId);
+      }
+      return next;
+    });
   };
 
   const handleLike = async () => {
@@ -219,16 +273,18 @@ export default function PostDetail() {
     setComment(''); // Clear input first
 
     // Optimistic update: add to UI immediately
-    const tempComment = {
+    const tempComment: Comment = {
       id: `temp-${Date.now()}`,
-      post_id: postId,
+      post_id: postId!,
       user_id: user.id,
       content: commentContent,
+      parent_id: null,
       created_at: new Date().toISOString(),
       profiles: {
         username: userProfile?.username || user.email?.split('@')[0] || 'Me',
         avatar_url: userProfile?.avatar_url || null,
       },
+      replies: [],
     };
     setComments(prev => [tempComment, ...prev]);
 
@@ -341,11 +397,116 @@ export default function PostDetail() {
           </div>
 
           <div className="space-y-4 mb-20">
-            <h3 className="font-bold text-sm">Comments ({comments.length})</h3>
+            <h3 className="font-bold text-sm">Comments ({comments.reduce((acc, c) => acc + 1 + (c.replies?.length || 0), 0)})</h3>
             {comments.map((c) => (
-              <div key={c.id} className="flex gap-3 text-sm">
-                 <div className="font-bold min-w-[3rem] truncate">{getDisplayName(c.profiles)}</div>
-                 <div className="text-gray-700">{c.content}</div>
+              <div key={c.id} className="border-b border-gray-100 pb-4">
+                {/* Parent Comment */}
+                <div className="flex gap-3 text-sm">
+                  <div className="w-8 h-8 bg-gray-200 rounded-full overflow-hidden flex-shrink-0">
+                    {c.profiles?.avatar_url && <img src={c.profiles.avatar_url} className="w-full h-full object-cover" />}
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold">{getDisplayName(c.profiles)}</span>
+                      <span className="text-xs text-gray-400">{new Date(c.created_at).toLocaleDateString()}</span>
+                    </div>
+                    <p className="text-gray-700 mt-1">{c.content}</p>
+                    <button 
+                      onClick={() => setReplyingTo(replyingTo === c.id ? null : c.id)}
+                      className="text-xs text-gray-500 mt-2 flex items-center gap-1 hover:text-black"
+                    >
+                      <Reply className="w-3 h-3" /> Reply
+                    </button>
+                    
+                    {/* Reply Input */}
+                    {replyingTo === c.id && (
+                      <form 
+                        onSubmit={async (e) => {
+                          e.preventDefault();
+                          const input = e.currentTarget.querySelector('input') as HTMLInputElement;
+                          if (!input.value.trim()) return;
+                          
+                          const { data: { user } } = await supabase.auth.getUser();
+                          if (!user) {
+                            alert('Please login to reply!');
+                            navigate('/login');
+                            return;
+                          }
+                          
+                          const replyContent = input.value;
+                          input.value = '';
+                          
+                          const { error } = await (supabase.from('comments') as any)
+                            .insert({
+                              post_id: postId,
+                              user_id: user.id,
+                              content: replyContent,
+                              parent_id: c.id,
+                            });
+                          
+                          if (error) {
+                            alert('Failed to post reply');
+                            return;
+                          }
+                          
+                          setReplyingTo(null);
+                          fetchComments();
+                          setHasChanges(true);
+                        }}
+                        className="flex gap-2 mt-2"
+                      >
+                        <input
+                          type="text"
+                          placeholder="Write a reply..."
+                          className="flex-1 bg-gray-100 rounded-full px-3 py-1.5 text-xs outline-none"
+                          autoFocus
+                        />
+                        <button type="submit" className="text-xs bg-black text-white px-3 py-1.5 rounded-full">
+                          Reply
+                        </button>
+                      </form>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Replies */}
+                {c.replies && c.replies.length > 0 && (
+                  <div className="ml-11 mt-3">
+                    <button 
+                      onClick={() => toggleReplies(c.id)}
+                      className="text-xs text-blue-600 flex items-center gap-1 mb-2"
+                    >
+                      {expandedReplies.has(c.id) ? (
+                        <>
+                          <ChevronUp className="w-3 h-3" /> Hide {c.replies.length} {c.replies.length === 1 ? 'reply' : 'replies'}
+                        </>
+                      ) : (
+                        <>
+                          <ChevronDown className="w-3 h-3" /> View {c.replies.length} {c.replies.length === 1 ? 'reply' : 'replies'}
+                        </>
+                      )}
+                    </button>
+                    
+                    {expandedReplies.has(c.id) && (
+                      <div className="space-y-3 border-l-2 border-gray-200 pl-3">
+                        {c.replies.map((reply) => (
+                          <div key={reply.id} className="flex gap-2 text-sm">
+                            <div className="w-6 h-6 bg-gray-200 rounded-full overflow-hidden flex-shrink-0">
+                              {reply.profiles?.avatar_url && <img src={reply.profiles.avatar_url} className="w-full h-full object-cover" />}
+                            </div>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <span className="font-bold text-xs">{getDisplayName(reply.profiles)}</span>
+                                <span className="text-xs text-gray-400">{new Date(reply.created_at).toLocaleDateString()}</span>
+                              </div>
+                              <p className="text-gray-700 text-xs mt-0.5">{reply.content}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             ))}
           </div>

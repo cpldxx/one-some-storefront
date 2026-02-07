@@ -9,6 +9,7 @@ import ShopPage from "./pages/ShopPage";
 import ProductPage from "./pages/ProductPage";
 import LikesPage from "./pages/LikesPage";
 import MyPage from "./pages/MyPage";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
@@ -47,8 +48,9 @@ const App = () => (
           <Route path="/product/:handle" element={<ProductPage />} />
           <Route path="/likes" element={<LikesPage />} />
           <Route path="/mypage" element={<MyPage />} />
+          <Route path="/account" element={<MyPage />} />
           <Route path="/orders" element={<MyPage />} />
-          <Route path="/settings" element={<MyPage />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
