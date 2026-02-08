@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft, Save, Ban, X, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { Layout } from '@/features/layout/Layout';
 import { supabase } from '@/lib/supabase';
 import { FILTERS } from '@/constants/filters';
+import { getBlockedUsers, unblockUser } from '@/lib/blocks';
 
 interface ProfileData {
   username: string;
@@ -17,10 +19,14 @@ interface ProfileData {
 
 export default function Settings() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [user, setUser] = useState<any>(null);
-  const [activeSection, setActiveSection] = useState<'profile' | 'body' | 'style' | 'password'>('profile');
+  const [activeSection, setActiveSection] = useState<'profile' | 'body' | 'style' | 'password' | 'blocked'>('profile');
+
+  // Blocked users
+  const [blockedUsers, setBlockedUsers] = useState<any[]>([]);
   
   // Profile fields
   const [username, setUsername] = useState('');
@@ -43,6 +49,12 @@ export default function Settings() {
   useEffect(() => {
     fetchProfile();
   }, []);
+
+  useEffect(() => {
+    if (activeSection === 'blocked' && user) {
+      fetchBlockedUsers();
+    }
+  }, [activeSection, user]);
 
   const fetchProfile = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -135,11 +147,39 @@ export default function Settings() {
   };
 
   const toggleStylePreference = (style: string) => {
-    setStylePreferences(prev => 
-      prev.includes(style) 
+    setStylePreferences(prev =>
+      prev.includes(style)
         ? prev.filter(s => s !== style)
         : [...prev, style]
     );
+  };
+
+  const fetchBlockedUsers = async () => {
+    if (!user) return;
+
+    try {
+      const blocked = await getBlockedUsers(user.id);
+      setBlockedUsers(blocked);
+    } catch (error) {
+      console.error('Failed to fetch blocked users:', error);
+    }
+  };
+
+  const handleUnblock = async (blockedId: string) => {
+    if (!user) return;
+
+    if (!confirm('Are you sure you want to unblock this user?')) return;
+
+    try {
+      await unblockUser(user.id, blockedId);
+      setBlockedUsers(prev => prev.filter(b => b.blocked_id !== blockedId));
+      // Invalidate cache so unblocked user's posts appear immediately
+      queryClient.invalidateQueries({ queryKey: ['style-posts'] });
+      alert('User unblocked successfully.');
+    } catch (error) {
+      console.error('Failed to unblock user:', error);
+      alert('Failed to unblock user.');
+    }
   };
 
   if (loading) {
@@ -196,6 +236,14 @@ export default function Settings() {
             }`}
           >
             Password
+          </button>
+          <button
+            onClick={() => setActiveSection('blocked')}
+            className={`flex-1 min-w-fit px-4 py-3 text-sm font-medium whitespace-nowrap ${
+              activeSection === 'blocked' ? 'border-b-2 border-black' : 'text-gray-400'
+            }`}
+          >
+            Blocked
           </button>
         </div>
 
@@ -385,7 +433,7 @@ export default function Settings() {
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/10"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium mb-2">Confirm New Password</label>
               <input
@@ -396,11 +444,11 @@ export default function Settings() {
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/10"
               />
             </div>
-            
+
             <p className="text-xs text-gray-500">
               Password must be at least 6 characters long
             </p>
-            
+
             <button
               onClick={handleChangePassword}
               disabled={saving || !newPassword || !confirmPassword}
@@ -409,6 +457,78 @@ export default function Settings() {
               <Lock className="w-4 h-4" />
               {saving ? 'Changing...' : 'Change Password'}
             </button>
+          </div>
+        )}
+
+        {/* Blocked Users Section */}
+        {activeSection === 'blocked' && (
+          <div className="p-4 space-y-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Ban className="w-5 h-5 text-gray-600" />
+              <h3 className="text-sm font-semibold">Blocked Users</h3>
+            </div>
+
+            <p className="text-xs text-gray-500 mb-4">
+              You won't see posts, comments, or interactions from blocked users.
+            </p>
+
+            {blockedUsers.length === 0 ? (
+              <div className="py-12 text-center">
+                <Ban className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                <p className="text-sm text-gray-500">No blocked users</p>
+                <p className="text-xs text-gray-400 mt-1">
+                  Users you block will appear here
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {blockedUsers.map((block: any) => {
+                  const blockedUser = block.blocked_user;
+                  const displayName = blockedUser?.username?.includes('@')
+                    ? blockedUser.username.split('@')[0]
+                    : blockedUser?.username || blockedUser?.email?.split('@')[0] || 'Unknown User';
+
+                  return (
+                    <div
+                      key={block.id}
+                      className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
+                    >
+                      <div className="w-10 h-10 bg-gray-200 rounded-full overflow-hidden flex-shrink-0">
+                        {blockedUser?.avatar_url ? (
+                          <img
+                            src={blockedUser.avatar_url}
+                            alt={displayName}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
+                            {displayName.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold truncate">{displayName}</p>
+                        {blockedUser?.email && (
+                          <p className="text-xs text-gray-500 truncate">{blockedUser.email}</p>
+                        )}
+                        <p className="text-xs text-gray-400 mt-0.5">
+                          Blocked {new Date(block.created_at).toLocaleDateString()}
+                        </p>
+                      </div>
+
+                      <button
+                        onClick={() => handleUnblock(block.blocked_id)}
+                        className="px-3 py-1.5 text-xs font-medium bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors flex items-center gap-1"
+                      >
+                        <X className="w-3 h-3" />
+                        Unblock
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
       </div>

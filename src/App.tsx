@@ -9,6 +9,7 @@ import ShopPage from "./pages/ShopPage";
 import ProductPage from "./pages/ProductPage";
 import LikesPage from "./pages/LikesPage";
 import MyPage from "./pages/MyPage";
+import UserProfile from "./pages/UserProfile";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
@@ -50,6 +51,7 @@ const App = () => (
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/account" element={<MyPage />} />
           <Route path="/orders" element={<MyPage />} />
+          <Route path="/user/:userId" element={<UserProfile />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

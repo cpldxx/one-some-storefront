@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 import { Database, PostTags, StylePost, CommentData } from '@/types/database';
+import { getBlockedUserIds, getUsersWhoBlockedMe } from './blocks';
 
 /**
  * Post creation interface
@@ -29,6 +30,17 @@ export async function fetchStylePosts(
   try {
     // Check if user is authenticated
     const { data: { user } } = await supabase.auth.getUser();
+
+    // Get blocked user IDs if user is authenticated
+    let blockedUserIds: string[] = [];
+    let usersWhoBlockedMe: string[] = [];
+
+    if (user) {
+      // Get users I blocked
+      blockedUserIds = await getBlockedUserIds(user.id);
+      // Get users who blocked me
+      usersWhoBlockedMe = await getUsersWhoBlockedMe(user.id);
+    }
 
     // Fetch posts with profile info (no likes in query to avoid RLS issues)
     let query = supabase
@@ -63,17 +75,29 @@ export async function fetchStylePosts(
       throw error;
     }
 
-    // Transform response data and fetch likes separately if user is authenticated
-    let posts: StylePost[] = (data || []).map((post: any) => {
-      // Get actual comment count from the joined comments table
-      const actualCommentCount = post.comments?.[0]?.count ?? post.comment_count ?? 0;
-      return {
-        ...post,
-        profile: post.profile,
-        comment_count: actualCommentCount, // Use actual count from DB
-        is_liked: false, // Will be updated below if user is authenticated
-      };
-    });
+    // Transform response data and filter blocked users
+    let posts: StylePost[] = (data || [])
+      .filter((post: any) => {
+        // Filter out posts from blocked users
+        if (blockedUserIds.includes(post.user_id)) {
+          return false;
+        }
+        // Filter out posts from users who blocked me
+        if (usersWhoBlockedMe.includes(post.user_id)) {
+          return false;
+        }
+        return true;
+      })
+      .map((post: any) => {
+        // Get actual comment count from the joined comments table
+        const actualCommentCount = post.comments?.[0]?.count ?? post.comment_count ?? 0;
+        return {
+          ...post,
+          profile: post.profile,
+          comment_count: actualCommentCount, // Use actual count from DB
+          is_liked: false, // Will be updated below if user is authenticated
+        };
+      });
 
     // If user is authenticated, fetch their likes for these posts
     if (user && posts.length > 0) {

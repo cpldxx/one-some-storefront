@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
-import { User, Grid3X3, Heart, Settings, LogOut, Camera, Trash2, X } from 'lucide-react';
+import { User, Grid3X3, Heart, Settings, LogOut, Camera, Trash2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Layout } from '@/features/layout/Layout';
 import { supabase } from '@/lib/supabase';
+import { getBlockedUserIds, getUsersWhoBlockedMe } from '@/lib/blocks';
+import { getFollowerCount, getFollowingCount } from '@/lib/follows';
+import { FollowListModal } from '@/components/FollowListModal';
 
 interface Profile {
   id: string;
@@ -14,6 +17,7 @@ interface Profile {
 
 interface Post {
   id: string;
+  user_id: string;
   image_url: string;
   like_count: number;
   comment_count: number;
@@ -26,6 +30,9 @@ export default function MyPage() {
   const [likedPosts, setLikedPosts] = useState<Post[]>([]);
   const [activeTab, setActiveTab] = useState<'posts' | 'likes'>('posts');
   const [loading, setLoading] = useState(true);
+  const [followerCount, setFollowerCount] = useState(0);
+  const [followingCount, setFollowingCount] = useState(0);
+  const [showFollowModal, setShowFollowModal] = useState<'followers' | 'following' | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -64,25 +71,40 @@ export default function MyPage() {
       setMyPosts(postsData);
     }
     
+    // Get blocked user IDs for filtering
+    const blockedUserIds = await getBlockedUserIds(user.id);
+    const usersWhoBlockedMe = await getUsersWhoBlockedMe(user.id);
+    const allBlockedIds = [...blockedUserIds, ...usersWhoBlockedMe];
+
     // Fetch liked posts
     const { data: likesData } = await (supabase
       .from('likes')
       .select('post_id')
       .eq('user_id', user.id) as any);
-    
+
     if (likesData && likesData.length > 0) {
       const postIds = likesData.map((l: any) => l.post_id);
       const { data: likedPostsData } = await supabase
         .from('posts')
-        .select('id, image_url, like_count, comment_count')
+        .select('id, user_id, image_url, like_count, comment_count')
         .in('id', postIds)
         .order('created_at', { ascending: false });
-      
+
       if (likedPostsData) {
-        setLikedPosts(likedPostsData);
+        // Filter out posts from blocked users
+        const filteredLikedPosts = likedPostsData.filter(
+          (post: any) => !allBlockedIds.includes(post.user_id)
+        );
+        setLikedPosts(filteredLikedPosts);
       }
     }
-    
+
+    // Get follower/following counts
+    const followers = await getFollowerCount(user.id);
+    const followings = await getFollowingCount(user.id);
+    setFollowerCount(followers);
+    setFollowingCount(followings);
+
     setLoading(false);
   };
 
@@ -189,10 +211,20 @@ export default function MyPage() {
                 <p className="text-xl font-bold">{myPosts.length}</p>
                 <p className="text-xs text-gray-500">Posts</p>
               </div>
-              <div className="text-center">
-                <p className="text-xl font-bold">{likedPosts.length}</p>
-                <p className="text-xs text-gray-500">Likes</p>
-              </div>
+              <button
+                onClick={() => setShowFollowModal('followers')}
+                className="text-center hover:opacity-70 transition-opacity"
+              >
+                <p className="text-xl font-bold">{followerCount}</p>
+                <p className="text-xs text-gray-500">Followers</p>
+              </button>
+              <button
+                onClick={() => setShowFollowModal('following')}
+                className="text-center hover:opacity-70 transition-opacity"
+              >
+                <p className="text-xl font-bold">{followingCount}</p>
+                <p className="text-xs text-gray-500">Following</p>
+              </button>
             </div>
           </div>
           
@@ -299,6 +331,17 @@ export default function MyPage() {
           </div>
         )}
       </div>
+
+      {/* Follow List Modal */}
+      {user && showFollowModal && (
+        <FollowListModal
+          isOpen={!!showFollowModal}
+          onClose={() => setShowFollowModal(null)}
+          userId={user.id}
+          type={showFollowModal}
+          title={showFollowModal === 'followers' ? 'Followers' : 'Following'}
+        />
+      )}
     </Layout>
   );
 }

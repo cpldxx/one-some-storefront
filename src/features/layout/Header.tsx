@@ -9,6 +9,7 @@ export function Header() {
   const navigate = useNavigate();
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isHeroVisible, setIsHeroVisible] = useState(true);
 
   // 로그인 상태 감지
   useEffect(() => {
@@ -37,8 +38,25 @@ export function Header() {
     navigate('/login');
   };
 
+  // 스크롤 위치에 따라 헤더 색상 반전
+  useEffect(() => {
+    const handleScroll = () => {
+      const heroHeight = window.innerHeight * 0.75; // 75vh
+      setIsHeroVisible(window.scrollY < heroHeight);
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
+    <header 
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isHeroVisible 
+          ? 'bg-transparent pointer-events-auto' 
+          : 'bg-white shadow-md pointer-events-auto'
+      }`}
+    >
       <div className="flex items-center justify-between h-14 px-4 container mx-auto">
         <Link 
           to="/" 
@@ -53,8 +71,8 @@ export function Header() {
             to="/" 
             className={`text-sm font-medium transition-colors ${
               location.pathname === '/' 
-                ? 'text-gray-900 border-b-2 border-gray-900' 
-                : 'text-gray-600 hover:text-gray-900'
+                ? `${isHeroVisible ? 'text-white' : 'text-gray-900'} border-b-2 ${isHeroVisible ? 'border-white' : 'border-gray-900'}` 
+                : `${isHeroVisible ? 'text-white/80' : 'text-gray-600'} hover:${isHeroVisible ? 'text-white' : 'text-gray-900'}`
             }`}
           >
             Home
@@ -63,8 +81,8 @@ export function Header() {
             to="/community" 
             className={`text-sm font-medium transition-colors ${
               location.pathname === '/community' 
-                ? 'text-gray-900 border-b-2 border-gray-900' 
-                : 'text-gray-600 hover:text-gray-900'
+                ? `${isHeroVisible ? 'text-white' : 'text-gray-900'} border-b-2 ${isHeroVisible ? 'border-white' : 'border-gray-900'}` 
+                : `${isHeroVisible ? 'text-white/80' : 'text-gray-600'} hover:${isHeroVisible ? 'text-white' : 'text-gray-900'}`
             }`}
           >
             Community
@@ -73,8 +91,8 @@ export function Header() {
             to="/shop" 
             className={`text-sm font-medium transition-colors ${
               location.pathname === '/shop' 
-                ? 'text-gray-900 border-b-2 border-gray-900' 
-                : 'text-gray-600 hover:text-gray-900'
+                ? `${isHeroVisible ? 'text-white' : 'text-gray-900'} border-b-2 ${isHeroVisible ? 'border-white' : 'border-gray-900'}` 
+                : `${isHeroVisible ? 'text-white/80' : 'text-gray-600'} hover:${isHeroVisible ? 'text-white' : 'text-gray-900'}`
             }`}
           >
             Shop

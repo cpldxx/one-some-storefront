@@ -3,7 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { togglePostLike } from '@/lib/community';
-import { Heart, MessageCircle, ArrowLeft, Send } from 'lucide-react';
+import { getBlockedUserIds, getUsersWhoBlockedMe, checkBlockRelationship, blockUser, unblockUser, isUserBlocked } from '@/lib/blocks';
+import { Heart, MessageCircle, ArrowLeft, Send, Ban } from 'lucide-react';
 
 // Helper function to get display name
 const getDisplayName = (profile: any): string => {
@@ -74,6 +75,9 @@ export default function PostDetail() {
   const [isLiking, setIsLiking] = useState(false);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [expandedReplies, setExpandedReplies] = useState<Set<string>>(new Set());
+  const [isBlocked, setIsBlocked] = useState(false);
+  const [checkingBlock, setCheckingBlock] = useState(false);
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -86,9 +90,67 @@ export default function PostDetail() {
   };
 
   useEffect(() => {
+    fetchCurrentUser();
     fetchPost();
     fetchComments();
   }, [postId]);
+
+  const fetchCurrentUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    setCurrentUser(user);
+  };
+
+  useEffect(() => {
+    if (post) {
+      checkBlockStatus();
+    }
+  }, [post]);
+
+  const checkBlockStatus = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user || !post) return;
+
+    setCheckingBlock(true);
+    const blocked = await isUserBlocked(user.id, post.user_id);
+    setIsBlocked(blocked);
+    setCheckingBlock(false);
+  };
+
+  const handleToggleBlock = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user || !post) return;
+
+    if (post.user_id === user.id) {
+      alert('You cannot block yourself.');
+      return;
+    }
+
+    const confirmMsg = isBlocked
+      ? 'Are you sure you want to unblock this user?'
+      : 'Are you sure you want to block this user? You will not see their posts and comments.';
+
+    if (!confirm(confirmMsg)) return;
+
+    try {
+      if (isBlocked) {
+        await unblockUser(user.id, post.user_id);
+        setIsBlocked(false);
+        // Invalidate cache to refresh posts
+        queryClient.invalidateQueries({ queryKey: ['style-posts'] });
+        alert('User unblocked successfully.');
+      } else {
+        await blockUser(user.id, post.user_id);
+        // Invalidate cache so blocked user's posts disappear immediately
+        queryClient.invalidateQueries({ queryKey: ['style-posts'] });
+        alert('User blocked successfully.');
+        // Redirect back to community immediately
+        navigate('/community');
+      }
+    } catch (error) {
+      console.error('Block/unblock failed:', error);
+      alert('Failed to update block status.');
+    }
+  };
 
   const fetchPost = async () => {
     if (!postId) return;
@@ -125,6 +187,17 @@ export default function PostDetail() {
 
   const fetchComments = async () => {
     if (!postId) return;
+
+    // Get blocked user IDs
+    const { data: { user } } = await supabase.auth.getUser();
+    let blockedUserIds: string[] = [];
+    let usersWhoBlockedMe: string[] = [];
+
+    if (user) {
+      blockedUserIds = await getBlockedUserIds(user.id);
+      usersWhoBlockedMe = await getUsersWhoBlockedMe(user.id);
+    }
+
     const { data, error } = await (supabase
       .from('comments')
       .select('*, profiles(username, email, avatar_url)')
@@ -132,11 +205,22 @@ export default function PostDetail() {
       .order('created_at', { ascending: true }) as any);
 
     if (!error && data) {
+      // Filter out comments from blocked users
+      const filteredData = data.filter((c: Comment) => {
+        if (blockedUserIds.includes(c.user_id)) {
+          return false;
+        }
+        if (usersWhoBlockedMe.includes(c.user_id)) {
+          return false;
+        }
+        return true;
+      });
+
       // Organize comments into threads (parent comments with replies)
       const parentComments: Comment[] = [];
       const repliesMap: Map<string, Comment[]> = new Map();
-      
-      data.forEach((c: Comment) => {
+
+      filteredData.forEach((c: Comment) => {
         if (c.parent_id) {
           // This is a reply
           const existing = repliesMap.get(c.parent_id) || [];
@@ -147,24 +231,24 @@ export default function PostDetail() {
           parentComments.push(c);
         }
       });
-      
+
       // Attach replies to parent comments
       const threaded = parentComments.map(parent => ({
         ...parent,
         replies: repliesMap.get(parent.id) || []
       }));
-      
+
       // Sort: newest first
       threaded.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-      
+
       setComments(threaded);
-      
+
       // DB의 comment_count와 실제 댓글 수가 다르면 동기화
-      if (post && post.comment_count !== data.length) {
+      if (post && post.comment_count !== filteredData.length) {
         await (supabase.from('posts') as any)
-          .update({ comment_count: data.length })
+          .update({ comment_count: filteredData.length })
           .eq('id', postId);
-        setPost({ ...post, comment_count: data.length });
+        setPost({ ...post, comment_count: filteredData.length });
       }
     }
   };
@@ -183,14 +267,23 @@ export default function PostDetail() {
 
   const handleLike = async () => {
     if (isLiking) return;
-    
+
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       alert('Please login to like!');
       navigate('/login');
       return;
     }
-    
+
+    // Check if there's a block relationship
+    if (post && post.user_id !== user.id) {
+      const blockStatus = await checkBlockRelationship(user.id, post.user_id);
+      if (blockStatus.user1BlockedUser2 || blockStatus.user2BlockedUser1) {
+        alert('Cannot interact with this post.');
+        return;
+      }
+    }
+
     setIsLiking(true);
     
     // Optimistic update
@@ -260,6 +353,15 @@ export default function PostDetail() {
       alert('Please login to comment!');
       navigate('/login');
       return;
+    }
+
+    // Check if there's a block relationship
+    if (post && post.user_id !== user.id) {
+      const blockStatus = await checkBlockRelationship(user.id, post.user_id);
+      if (blockStatus.user1BlockedUser2 || blockStatus.user2BlockedUser1) {
+        alert('Cannot interact with this post.');
+        return;
+      }
     }
 
     // Get user profile
@@ -367,13 +469,34 @@ export default function PostDetail() {
 
         <div className="p-4">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-gray-200 rounded-full overflow-hidden">
+            <button
+              onClick={() => navigate(`/user/${post.user_id}`)}
+              className="w-10 h-10 bg-gray-200 rounded-full overflow-hidden"
+            >
                {post.profiles?.avatar_url && <img src={post.profiles.avatar_url} className="w-full h-full object-cover" />}
-            </div>
-            <div>
-              <p className="font-bold text-sm">{getDisplayName(post.profiles)}</p>
+            </button>
+            <button
+              onClick={() => navigate(`/user/${post.user_id}`)}
+              className="flex-1 text-left"
+            >
+              <p className="font-bold text-sm hover:underline">{getDisplayName(post.profiles)}</p>
               <p className="text-xs text-gray-500">{new Date(post.created_at).toLocaleDateString()}</p>
-            </div>
+            </button>
+            {/* Block Button - only show if not own post and user is logged in */}
+            {currentUser && post.user_id !== currentUser.id && (
+              <button
+                onClick={handleToggleBlock}
+                disabled={checkingBlock}
+                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors flex items-center gap-1 ${
+                  isBlocked
+                    ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    : 'bg-red-50 text-red-600 hover:bg-red-100'
+                }`}
+              >
+                <Ban className="w-4 h-4" />
+                {isBlocked ? 'Unblock' : 'Block'}
+              </button>
+            )}
           </div>
           
           <p className="text-sm mb-4 whitespace-pre-wrap leading-relaxed">{post.description}</p>
@@ -427,14 +550,32 @@ export default function PostDetail() {
                           e.preventDefault();
                           const input = e.currentTarget.querySelector('input') as HTMLInputElement;
                           if (!input.value.trim()) return;
-                          
+
                           const { data: { user } } = await supabase.auth.getUser();
                           if (!user) {
                             alert('Please login to reply!');
                             navigate('/login');
                             return;
                           }
-                          
+
+                          // Check if there's a block relationship with post owner
+                          if (post && post.user_id !== user.id) {
+                            const blockStatus = await checkBlockRelationship(user.id, post.user_id);
+                            if (blockStatus.user1BlockedUser2 || blockStatus.user2BlockedUser1) {
+                              alert('Cannot interact with this post.');
+                              return;
+                            }
+                          }
+
+                          // Check if there's a block relationship with comment owner
+                          if (c.user_id !== user.id) {
+                            const blockStatus = await checkBlockRelationship(user.id, c.user_id);
+                            if (blockStatus.user1BlockedUser2 || blockStatus.user2BlockedUser1) {
+                              alert('Cannot reply to this comment.');
+                              return;
+                            }
+                          }
+
                           const replyContent = input.value;
                           input.value = '';
                           
