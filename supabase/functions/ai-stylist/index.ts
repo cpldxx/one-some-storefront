@@ -2,7 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
 const GROQ_API_KEY = Deno.env.get('GROQ_API_KEY');
 const OPENWEATHER_API_KEY = Deno.env.get('OPENWEATHER_API_KEY');
-const PEXELS_API_KEY = Deno.env.get('PEXELS_API_KEY');
+const POLLINATIONS_API_KEY = Deno.env.get('POLLINATIONS_API_KEY');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -84,7 +84,7 @@ As a professional Korean fashion stylist, provide ONE consistent recommendation 
 Return JSON (ALL TEXT IN ENGLISH):
 {
   "reasoning": "2-3 English sentences explaining why THIS specific outfit is perfect for their body, style, and weather",
-  "image_prompt": "3-5 English keywords for the exact outfit - e.g. 'oversized black coat minimal' or 'casual blue denim jacket'"
+  "outfit_description": "Detailed outfit description including: top (color, style), bottom (type, color), shoes (style, color), and accessories if any. For example: 'white oversized cotton t-shirt, black slim-fit jeans, white minimalist sneakers, silver watch'"
 }
 
 Output ONLY JSON in ENGLISH. Be CONSISTENT - same profile should get similar recommendations.`
@@ -105,13 +105,13 @@ Output ONLY JSON in ENGLISH. Be CONSISTENT - same profile should get similar rec
 
     // Determine default style based on user preferences
     const userStyle = profile.style_preferences?.[0] || 'casual';
-    const defaultPrompt = `${userStyle} korean fashion`;
+    const defaultOutfit = `${userStyle} korean fashion outfit, full body`;
     const bodyInfo = profile.height && profile.weight ?
       `Perfect for your height (${profile.height}cm) and weight (${profile.weight}kg). ` : '';
 
     let aiOutput = {
       reasoning: `${bodyInfo}We recommend a ${userStyle} style outfit for today's weather (${temp}°C, ${weatherMain}). This look is tailored perfectly for you!`,
-      image_prompt: defaultPrompt
+      outfit_description: defaultOutfit
     };
 
     try {
@@ -121,86 +121,112 @@ Output ONLY JSON in ENGLISH. Be CONSISTENT - same profile should get similar rec
         if (jsonMatch) {
           const parsed = JSON.parse(jsonMatch[0]);
           aiOutput.reasoning = parsed.reasoning || aiOutput.reasoning;
-          aiOutput.image_prompt = parsed.image_prompt || aiOutput.image_prompt;
-
-          // Keep prompt concise (max 5 words for better image results)
-          const words = aiOutput.image_prompt.split(' ').slice(0, 5).join(' ');
-          aiOutput.image_prompt = words;
+          aiOutput.outfit_description = parsed.outfit_description || aiOutput.outfit_description;
         }
       }
     } catch (e) {
       console.error('[AI Stylist] LLM 파싱 실패 (기본값 사용)', e);
     }
 
-    console.log('[AI Stylist] Image prompt:', aiOutput.image_prompt);
+    console.log('[AI Stylist] Outfit description:', aiOutput.outfit_description);
 
-    // 3. 이미지 검색 (Pexels API - 사용자 체형에 맞는 패션 사진)
-    // Build body type keywords based on actual user data
-    let bodyTypeKeywords = '';
+    // 3. 서버에서 이미지 생성 (Pollinations API + Flux 모델)
+    const stylePrefix = "flat lay product on white background";
+    const styleSuffix = "studio photo high quality 4k";
+    const imagePrompt = `${stylePrefix} ${aiOutput.outfit_description} ${styleSuffix}`;
+    const randomSeed = Math.floor(Math.random() * 1000000);
 
-    if (profile.height && profile.weight) {
-      // Calculate approximate body type from height/weight
-      const heightM = profile.height / 100;
-      const bmi = profile.weight / (heightM * heightM);
+    let imageUrl = '';
+    let imageError: string | null = null;
 
-      if (bmi < 18.5) {
-        bodyTypeKeywords = 'slim fit';
-      } else if (bmi >= 18.5 && bmi < 25) {
-        bodyTypeKeywords = 'regular fit';
+    try {
+      console.log('[Pollinations] Generating image with prompt:', imagePrompt);
+
+      // Pollinations API - zimage (Z-Image Turbo: 빠른 6B + 2x 업스케일링)
+      const imageApiUrl = `https://gen.pollinations.ai/image/${encodeURIComponent(imagePrompt)}?model=zimage&seed=${randomSeed}&width=512&height=512&nologo=true`;
+
+      console.log('[Pollinations] API URL:', imageApiUrl);
+
+      // API 키 있으면 사용, 없으면 무료 티어로 시도
+      const headers: Record<string, string> = {};
+      if (POLLINATIONS_API_KEY) {
+        headers['Authorization'] = `Bearer ${POLLINATIONS_API_KEY}`;
+        console.log('[Pollinations] Using API key');
       } else {
-        bodyTypeKeywords = 'relaxed fit';
+        console.log('[Pollinations] Using free tier (no API key)');
       }
-    }
 
-    // Add gender-specific keywords
-    const genderKeyword = profile.gender === 'male' ? 'man' :
-                         profile.gender === 'female' ? 'woman' : 'person';
+      // 타임아웃 설정 (45초 - 이미지 생성에 시간이 걸릴 수 있음)
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 45000);
 
-    // Add weather/season-specific keywords based on temperature
-    let seasonKeywords = '';
-    if (temp <= 0) {
-      seasonKeywords = 'winter cold weather heavy coat warm layered';
-    } else if (temp > 0 && temp <= 10) {
-      seasonKeywords = 'winter fall jacket coat layered';
-    } else if (temp > 10 && temp <= 20) {
-      seasonKeywords = 'spring fall light jacket';
-    } else if (temp > 20 && temp <= 28) {
-      seasonKeywords = 'summer spring light casual';
-    } else {
-      seasonKeywords = 'summer hot weather light breathable';
-    }
+      try {
+        const imageResponse = await fetch(imageApiUrl, {
+          headers: headers,
+          signal: controller.signal
+        });
 
-    // Combine all search terms with weather priority - emphasize full body front-facing shots
-    const searchQuery = `front view frontal full length portrait full body ${genderKeyword} ${seasonKeywords} ${bodyTypeKeywords} ${aiOutput.image_prompt} fashion model street photography`;
+        clearTimeout(timeoutId);
 
-    console.log('[AI Stylist] 검색 쿼리:', searchQuery);
+        console.log('[Pollinations] Response status:', imageResponse.status);
 
-    const pexelsRes = await fetch(
-      `https://api.pexels.com/v1/search?query=${encodeURIComponent(searchQuery)}&per_page=20&orientation=portrait`,
-      {
-        headers: {
-          Authorization: PEXELS_API_KEY || '',
-        },
+        if (imageResponse.ok) {
+          // 이미지를 Base64로 변환해서 반환 (브라우저에서 인증 없이 로드 가능)
+          console.log('[Pollinations] Downloading image...');
+          const imageBlob = await imageResponse.blob();
+          console.log('[Pollinations] Image blob size:', imageBlob.size);
+
+          // Base64 변환 - 청크로 나눠서 처리 (메모리 효율적)
+          const arrayBuffer = await imageBlob.arrayBuffer();
+          const bytes = new Uint8Array(arrayBuffer);
+          let binary = '';
+          const chunkSize = 8192; // 8KB 청크
+
+          for (let i = 0; i < bytes.length; i += chunkSize) {
+            const chunk = bytes.subarray(i, Math.min(i + chunkSize, bytes.length));
+            binary += String.fromCharCode.apply(null, Array.from(chunk));
+          }
+
+          const base64 = btoa(binary);
+          imageUrl = `data:image/jpeg;base64,${base64}`;
+          console.log('[Pollinations] Image converted to base64, size:', base64.length);
+        } else if (imageResponse.status === 429) {
+          // 크레딧 소진 또는 Rate Limit
+          imageError = 'RATE_LIMIT';
+          const errorText = await imageResponse.text();
+          console.error('[Pollinations] Rate limit:', errorText);
+        } else if (imageResponse.status === 402) {
+          // 결제 필요 (크레딧 없음)
+          imageError = 'NO_CREDITS';
+          const errorText = await imageResponse.text();
+          console.error('[Pollinations] No credits:', errorText);
+        } else {
+          const errorText = await imageResponse.text();
+          console.error('[Pollinations] Failed:', imageResponse.status, errorText);
+          imageError = 'API_ERROR';
+        }
+      } catch (fetchError: any) {
+        clearTimeout(timeoutId);
+        if (fetchError.name === 'AbortError') {
+          console.error('[Pollinations] Timeout after 30s');
+          imageError = 'NETWORK_ERROR';
+        } else {
+          throw fetchError;
+        }
       }
-    );
-
-    let imageUrl = 'https://via.placeholder.com/400x600?text=No+Image';
-
-    if (pexelsRes.ok) {
-      const pexelsData = await pexelsRes.json();
-      if (pexelsData.photos && pexelsData.photos.length > 0) {
-        // Always use the first (most relevant) photo for consistency
-        imageUrl = pexelsData.photos[0].src.large;
-      }
+    } catch (error: any) {
+      console.error('[Pollinations] Error:', error.message || error);
+      console.error('[Pollinations] Error stack:', error.stack);
+      imageError = 'NETWORK_ERROR';
     }
-
-    console.log('[AI Stylist] Pexels 이미지 검색 완료:', searchQuery);
 
     return new Response(
       JSON.stringify({
-        image: imageUrl,
+        outfit_description: aiOutput.outfit_description,
         reasoning: aiOutput.reasoning,
-        info: { temp, weather: weatherMain }
+        weather: { temp, main: weatherMain },
+        image: imageUrl || null,
+        imageError: imageError // 에러 타입 전달
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )

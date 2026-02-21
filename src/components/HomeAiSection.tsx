@@ -6,7 +6,7 @@ export default function HomeAiSection() {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [imageLoading, setImageLoading] = useState(false);
-  const [result, setResult] = useState<{ image: string; reasoning: string; weather: any } | null>(null);
+  const [result, setResult] = useState<{ image: string | null; reasoning: string; weather: any } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -17,7 +17,7 @@ export default function HomeAiSection() {
           .from("profiles")
           .select("*")
           .eq("id", data.user.id)
-          .single()
+          .maybeSingle()  // ← 프로필 없어도 에러 안 남
           .then(({ data }) => setProfile(data));
       }
     });
@@ -70,8 +70,48 @@ export default function HomeAiSection() {
           if (data.error) {
             setError(`Error: ${data.error}`);
           } else {
-            setImageLoading(true);
-            setResult(data);
+            // 이미지 에러 처리
+            if (data.imageError) {
+              let errorMessage = '';
+              switch (data.imageError) {
+                case 'RATE_LIMIT':
+                case 'NO_CREDITS':
+                  errorMessage = '일일 무료 크레딧을 모두 사용했습니다. 내일 다시 시도해주세요! 🎨';
+                  break;
+                case 'API_ERROR':
+                  errorMessage = '이미지 생성에 실패했습니다. 잠시 후 다시 시도해주세요.';
+                  break;
+                case 'NETWORK_ERROR':
+                  errorMessage = 'Image generation timed out. Please try again.';
+                  break;
+                default:
+                  errorMessage = '이미지 생성 중 문제가 발생했습니다.';
+              }
+
+              setResult({
+                image: null,
+                reasoning: data.reasoning,
+                weather: data.weather
+              });
+              setError(errorMessage);
+              setImageLoading(false);
+            } else if (data.image) {
+              // 이미지 생성 성공
+              setResult({
+                image: data.image,
+                reasoning: data.reasoning,
+                weather: data.weather
+              });
+              setImageLoading(false);
+            } else {
+              // 이미지 없지만 추천은 표시
+              setResult({
+                image: null,
+                reasoning: data.reasoning,
+                weather: data.weather
+              });
+              setImageLoading(false);
+            }
           }
         } catch (e: any) {
           console.error('[AI Stylist] Exception:', e);

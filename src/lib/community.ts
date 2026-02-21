@@ -339,7 +339,7 @@ export async function togglePostLike(
       .select('id')
       .eq('post_id', postId)
       .eq('user_id', userId)
-      .single();
+      .maybeSingle();
 
     // 현재 포스트의 like_count 가져오기
     const { data: currentPost } = await (supabase
@@ -400,7 +400,7 @@ export async function checkUserLiked(
       .select('id')
       .eq('post_id', postId)
       .eq('user_id', userId)
-      .single();
+      .maybeSingle();
 
     return !!data;
   } catch {

@@ -9,7 +9,8 @@ export function Header() {
   const navigate = useNavigate();
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [isHeroVisible, setIsHeroVisible] = useState(true);
+
+  const isHome = location.pathname === '/';
 
   // 로그인 상태 감지
   useEffect(() => {
@@ -38,23 +39,12 @@ export function Header() {
     navigate('/login');
   };
 
-  // 스크롤 위치에 따라 헤더 색상 반전
-  useEffect(() => {
-    const handleScroll = () => {
-      const heroHeight = window.innerHeight * 0.75; // 75vh
-      setIsHeroVisible(window.scrollY < heroHeight);
-    };
-    
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   return (
-    <header 
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isHeroVisible 
-          ? 'bg-transparent pointer-events-auto' 
-          : 'bg-white shadow-md pointer-events-auto'
+    <header
+      className={`top-0 left-0 right-0 z-50 transition-all duration-300 pointer-events-auto ${
+        isHome
+          ? 'absolute bg-transparent'
+          : 'fixed bg-white border-b shadow-sm'
       }`}
     >
       <div className="flex items-center justify-between h-14 px-4 container mx-auto">
@@ -67,52 +57,50 @@ export function Header() {
         
         {/* Center Navigation */}
         <nav className="flex items-center gap-8">
-          <Link 
-            to="/" 
-            className={`text-sm font-medium transition-colors ${
-              location.pathname === '/' 
-                ? `${isHeroVisible ? 'text-white' : 'text-gray-900'} border-b-2 ${isHeroVisible ? 'border-white' : 'border-gray-900'}` 
-                : `${isHeroVisible ? 'text-white/80' : 'text-gray-600'} hover:${isHeroVisible ? 'text-white' : 'text-gray-900'}`
-            }`}
-          >
-            Home
-          </Link>
-          <Link 
-            to="/community" 
-            className={`text-sm font-medium transition-colors ${
-              location.pathname === '/community' 
-                ? `${isHeroVisible ? 'text-white' : 'text-gray-900'} border-b-2 ${isHeroVisible ? 'border-white' : 'border-gray-900'}` 
-                : `${isHeroVisible ? 'text-white/80' : 'text-gray-600'} hover:${isHeroVisible ? 'text-white' : 'text-gray-900'}`
-            }`}
-          >
-            Community
-          </Link>
-          <Link 
-            to="/shop" 
-            className={`text-sm font-medium transition-colors ${
-              location.pathname === '/shop' 
-                ? `${isHeroVisible ? 'text-white' : 'text-gray-900'} border-b-2 ${isHeroVisible ? 'border-white' : 'border-gray-900'}` 
-                : `${isHeroVisible ? 'text-white/80' : 'text-gray-600'} hover:${isHeroVisible ? 'text-white' : 'text-gray-900'}`
-            }`}
-          >
-            Shop
-          </Link>
+          {[
+            { to: '/', label: 'Home' },
+            { to: '/community', label: 'Community' },
+            { to: '/shop', label: 'Shop' },
+          ].map(({ to, label }) => {
+            const isActive = location.pathname === to;
+            return (
+              <Link
+                key={to}
+                to={to}
+                className={`text-sm font-medium transition-colors ${
+                  isHome
+                    ? isActive
+                      ? 'text-white border-b-2 border-white'
+                      : 'text-white/80 hover:text-white'
+                    : isActive
+                      ? 'text-black border-b-2 border-black'
+                      : 'text-gray-500 hover:text-black'
+                }`}
+              >
+                {label}
+              </Link>
+            );
+          })}
         </nav>
         
         {/* Right Icons */}
         <div className="relative">
-          <button 
+          <button
             onClick={() => setShowDropdown(!showDropdown)}
-            className="flex items-center gap-1 p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className={`flex items-center gap-1 p-2 rounded-lg transition-colors ${
+              isHome ? 'hover:bg-white/10' : 'hover:bg-gray-100'
+            }`}
           >
             {user ? (
-              <div className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center text-sm font-medium">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                isHome ? 'bg-white text-black' : 'bg-black text-white'
+              }`}>
                 {user.email?.charAt(0).toUpperCase()}
               </div>
             ) : (
-              <User className="w-5 h-5 text-gray-700" />
+              <User className={`w-5 h-5 ${isHome ? 'text-white' : 'text-gray-700'}`} />
             )}
-            <ChevronDown className="w-4 h-4 text-gray-500" />
+            <ChevronDown className={`w-4 h-4 ${isHome ? 'text-white/70' : 'text-gray-400'}`} />
           </button>
 
           {/* Dropdown Menu */}

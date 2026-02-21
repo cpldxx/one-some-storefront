@@ -52,7 +52,7 @@ export function FilterBar({ onFilterChange, onSortChange, postCount }: FilterBar
   }, 0);
 
   return (
-    <div className="bg-white sticky top-0 z-20 border-b">
+    <div className="bg-white sticky top-14 z-20 border-b">
       {/* 한 줄에 필터 + 포스트 수 + 정렬 */}
       <div className="container mx-auto px-4 py-3 flex items-center gap-2">
         {/* 필터 버튼들 */}

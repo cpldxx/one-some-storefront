@@ -97,6 +97,8 @@ export const HeroSection = () => {
                   {/* Dark Gradient Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
                   <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
+                  {/* Top gradient for header readability */}
+                  <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-black/50 to-transparent" />
 
                   {/* Content - 왼쪽 하단 배치 */}
                   <div className="absolute inset-0 flex items-end">

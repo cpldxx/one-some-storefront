@@ -56,9 +56,9 @@ export async function isFollowing(
       .select('id')
       .eq('follower_id', followerId)
       .eq('following_id', followingId)
-      .single();
+      .maybeSingle();
 
-    if (error && error.code !== 'PGRST116') {
+    if (error) {
       console.error('[Follows] Error checking follow status:', error);
     }
 

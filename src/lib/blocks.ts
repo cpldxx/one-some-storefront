@@ -56,10 +56,9 @@ export async function isUserBlocked(
       .select('id')
       .eq('blocker_id', blockerId)
       .eq('blocked_id', blockedId)
-      .single();
+      .maybeSingle();
 
-    if (error && error.code !== 'PGRST116') {
-      // PGRST116 = no rows returned, which is expected when not blocked
+    if (error) {
       console.error('[Blocks] Error checking block status:', error);
     }
 
@@ -149,7 +148,7 @@ export async function checkBlockRelationship(
       .select('id')
       .eq('blocker_id', userId1)
       .eq('blocked_id', userId2)
-      .single();
+      .maybeSingle();
 
     // Check if user2 blocked user1
     const { data: block2 } = await supabase
@@ -157,7 +156,7 @@ export async function checkBlockRelationship(
       .select('id')
       .eq('blocker_id', userId2)
       .eq('blocked_id', userId1)
-      .single();
+      .maybeSingle();
 
     return {
       user1BlockedUser2: !!block1,

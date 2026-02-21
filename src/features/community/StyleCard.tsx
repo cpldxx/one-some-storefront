@@ -176,7 +176,7 @@ export function StyleCard({ post, onLikeUpdate }: StyleCardProps) {
               />
             )}
             <span className="text-white text-sm font-semibold">
-              {post.profile?.username || 'Anonymous'}
+              {getDisplayName(post.profile)}
             </span>
           </div>
         </div>
